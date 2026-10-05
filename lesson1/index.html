@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f3ed">
+  <title>CS + SG · Build Minesweeper</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="polish.css">
+  <link rel="stylesheet" href="revamp.css">
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Workshop home"><span class="brand-mark">&lt;/&gt;</span><span>CS + SG <small>BUILD MINESWEEPER</small></span></a>
+    <nav class="mode-tabs" aria-label="Workshop mode"><button class="mode-tab" data-mode="assignment">Assignment</button><button class="mode-tab active" data-mode="slides">Slides</button></nav>
+    <div class="top-meta"><span>2 HOUR WORKSHOP</span><span class="key-hint">← → <b>navigate</b></span></div>
+  </header>
+  <div class="progress-track"><div id="progress"></div></div>
+  <div class="layout" id="slidesMode">
+    <aside class="sidebar">
+      <div class="side-heading">TODAY'S BUILD <span id="routeCount"></span></div>
+      <nav id="sectionNav" aria-label="Workshop slides"></nav>
+      <div class="sidebar-note"><div><b>Teacher copy</b><p>Short prompts on screen. Expand Teacher notes for what to say.</p></div></div>
+    </aside>
+    <main id="main" tabindex="-1">
+      <div class="slide-top"><span id="sectionLabel" class="eyebrow"></span><span id="sectionTime" class="time-pill"></span></div>
+      <article id="slide"></article>
+      <footer class="slide-footer"><span id="slideIndex"></span><div class="footer-controls"><button id="prev" class="arrow-button" aria-label="Previous slide">←</button><button id="present" class="arrow-button" aria-label="Enter full screen presentation">⛶ <span class="present-label">Present</span></button><button id="next" class="next-button">Next <span>→</span></button></div></footer>
+    </main>
+  </div>
+  <main class="assignment-page" id="assignmentMode" hidden>
+    <div class="assignment-heading"><div><div class="eyebrow">PAIR CODING · ABOUT 60 MINUTES</div><h1>Let’s make the game <span class="accent">together</span>.</h1><p class="lead">Follow the same implementation decisions as the slides. Take turns driving the keyboard and explaining what your code does.</p></div><div class="assignment-meta"><b>ONE SHARED BUILD</b><span>HTML structure · CSS grid · JavaScript game state</span></div></div>
+    <div class="workshop-map" aria-label="Coding sequence"><span>Agree</span><i>→</i><span>Structure</span><i>→</i><span>Model</span><i>→</i><span>Render</span><i>→</i><span>Play</span><i>→</i><span>Review</span></div>
+    <div class="implementation-banner"><b>Class standard:</b> 9 × 9 board · 10 mines · safe first click · eight neighbors count · right-click or Shift-click to flag · reveal every safe square to win. See <a href="IMPLEMENTATION.md">the full implementation contract</a>.</div>
+    <div class="assignment-task-grid">
+      <section class="task-card"><div class="task-number">01</div><div class="task-content"><div class="tag">5 MIN · DESIGN BEFORE CODE</div><h2>Agree on the rules</h2><p>Sketch a 5 × 5 board with three mines. Count the touching mines for each square, including diagonals. Then compare your paper model with the class standard above.</p><div class="paper-grid" aria-label="5 by 5 example board"><span></span><span></span><span></span><span></span><span></span><span></span><span>✹</span><span></span><span></span><span></span><span></span><span></span><span></span><span>✹</span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span>✹</span><span></span><span></span></div><label class="task-label" for="ruleExplain">What must one cell remember?</label><textarea id="ruleExplain" data-evidence="Cell data model" placeholder="Each cell needs to remember..."></textarea></div></section>
+      <section class="task-card"><div class="task-number">02</div><div class="task-content"><div class="tag">8 MIN · TERMINAL + HTML</div><h2>Create the page skeleton</h2><p>Make a project folder, then the three files. Check your location with <code>pwd</code>; use <code>ls</code> to see what is inside.</p><pre class="assignment-code">mkdir minesweeper
+cd minesweeper
+touch index.html styles.css game.js</pre><p>In HTML, add a title, heading, instruction, counters, reset button, and empty board container. Link the CSS and JavaScript files.</p><label class="task-label" for="htmlExplain">Point to the board container. What will JavaScript put inside it?</label><textarea id="htmlExplain" data-evidence="HTML structure" placeholder="The board container will hold..."></textarea></div></section>
+      <section class="task-card"><div class="task-number">03</div><div class="task-content"><div class="tag">10 MIN · CSS GRID</div><h2>Draw 81 covered squares</h2><p>Use CSS Grid with nine columns. Make each square a button with a covered style. Add a different style for revealed cells and numbers.</p><div class="mini-board" aria-label="Illustration of covered, numbered, and mined squares"><span>?</span><span>?</span><span class="open-cell">1</span><span>?</span><span class="mine-cell">✹</span><span>?</span><span class="open-cell">2</span><span>?</span><span>?</span></div><label class="task-label" for="cssExplain">How does the browser know how to arrange the cells?</label><textarea id="cssExplain" data-evidence="CSS grid" placeholder="The grid is arranged by..."></textarea></div></section>
+      <section class="task-card"><div class="task-number">04</div><div class="task-content"><div class="tag">12 MIN · GAME DATA</div><h2>Represent the board</h2><p>Use a two-dimensional array. Each cell is an object with a row, column, mine, nearby count, revealed, and flagged value.</p><pre class="assignment-code">{
+  r: 0, c: 0,
+  mine: false, count: 0,
+  revealed: false, flagged: false
+}</pre><p>Write a neighbors function: check the eight surrounding positions, but skip coordinates outside the board. Place mines, then count neighbors.</p><label class="task-label" for="modelExplain">Why store game data separately from the button?</label><textarea id="modelExplain" data-evidence="Game data" placeholder="We keep data separate so..."></textarea></div></section>
+      <section class="task-card"><div class="task-number">05</div><div class="task-content"><div class="tag">20 MIN · MAKE IT PLAYABLE</div><h2>Render. Reveal. Finish a round.</h2><p>Build in small steps: draw buttons from cell data; connect clicks; reveal a safe cell or end the game on a mine; expand zero cells to show their neighbors.</p><div class="click-sequence"><span>click</span><i>→</i><span>read cell</span><i>→</i><span>update data</span><i>→</i><span>redraw</span></div><p>Then add flags, the timer, reset, and win detection. Keep the teacher copy open to compare behavior and read the matching functions.</p><a href="minesweeper.html" target="_blank" rel="noreferrer">Open the playable teacher copy ↗</a><label class="task-label" for="behaviorExplain">What happens when an empty square has no nearby mines?</label><textarea id="behaviorExplain" data-evidence="Reveal behavior" placeholder="The game should..."></textarea></div></section>
+      <section class="task-card"><div class="task-number">06</div><div class="task-content"><div class="tag">5 MIN · PLAYTEST + GIT</div><h2>Try the edge cases</h2><p>Test a corner, an edge, a mine, an empty area, a flag, reset, a win, and a loss. Fix one issue on a feature branch; inspect and commit your change.</p><div class="task-prompt"><label for="testExplain">Which test found a bug or surprising result?</label><textarea id="testExplain" data-evidence="Playtest finding" placeholder="I tried ... and noticed..."></textarea></div><div class="task-prompt"><label for="gitExplain">Where is the change after edit, stage, commit, and push?</label><textarea id="gitExplain" data-evidence="Git steps" placeholder="Edit = ... Stage = ... Commit = ... Push = ..."></textarea></div></div></section>
+    </div>
+    <div class="assignment-submit"><div><h2>Class build complete</h2><p>Keep the project files. Download your notes and your group’s implementation decisions.</p></div><button id="downloadEvidence" class="next-button">Download notes <span>↓</span></button><span id="saveStatus" role="status"></span></div>
+  </main>
+</div>
+<div id="slideTemplates" hidden>
+  <template data-title="Decide what we’re building" data-time="5 MIN" data-label="01 · SHARED IMPLEMENTATION">
+    <div class="eyebrow">BEFORE WE OPEN THE EDITOR</div><h2>First, we agree on the <span class="accent">game</span>.</h2><p class="lead">One class build. One set of rules. We can explain every choice before we code it.</p>
+    <div class="spec-board"><div><b>9 × 9</b><small>board size</small></div><div><b>10</b><small>random mines</small></div><div><b>8 neighbors</b><small>count diagonals too</small></div><div><b>Safe start</b><small>first click is never a mine</small></div><div><b>Zero opens area</b><small>show the empty region</small></div><div><b>71 to win</b><small>reveal every safe square</small></div></div>
+    <div class="one-line">We will make a <b>frontend game</b> with HTML, CSS, and JavaScript in the browser.</div><details class="speaker-notes"><summary>Teacher notes · standardize decisions first</summary><p>Ask which rules should be decided before implementation. Agree on the 9 by 9 beginner board, ten mines, first click safe, count all eight neighbors, reveal connected zero areas, right-click/Shift-click flags, timer from first click, and win after all 71 safe cells are open. These defaults are written in IMPLEMENTATION.md so the class and teacher copy match.</p></details>
+  </template>
+  <template data-title="Three files, one browser game" data-time="2 MIN" data-label="02 · FRONTEND ONLY">
+    <div class="eyebrow">THE WHOLE PROJECT RUNS IN THE BROWSER</div><h2>Three files work <span class="accent">together</span>.</h2><div class="frontend-pieces"><div class="piece html-piece"><div class="piece-drawing"><span>&lt;main&gt; … &lt;/main&gt;</span><b>board + controls</b></div><b>index.html</b><p>Page structure</p></div><div class="piece css-piece"><div class="piece-drawing styled-drawing"><span>9 columns</span><div class="piece-cell-row"><i></i><i class="revealed">1</i><i></i></div></div><b>styles.css</b><p>Board appearance</p></div><div class="piece js-piece"><div class="piece-drawing"><button class="fake-cell">?</button><span class="click-arrow">↘</span><button class="fake-cell revealed">1</button></div><b>game.js</b><p>Game rules & clicks</p></div></div><div class="one-line">The game state stays in this page. Reloading starts over.</div><details class="speaker-notes"><summary>Teacher notes · keep the boundary clear</summary><p>We are deliberately building just the frontend. HTML creates the controls and board container; CSS lays it out; browser JavaScript stores the board and responds to clicks. Keep pointing back to these three files as we build.</p></details>
+  </template>
+  <template data-title="Make a project folder" data-time="3 MIN" data-label="03 · TERMINAL + FILES">
+    <div class="eyebrow">THE TERMINAL IS A TEXT INTERFACE</div><h2>Know where you are. Then make the <span class="accent">files</span>.</h2><div class="terminal-picture"><div class="terminal-sketch"><div class="terminal-top"><i></i><i></i><i></i><span>TERMINAL</span></div><pre><b>$ pwd</b>
+/home/student
+
+<b>$ mkdir minesweeper</b>
+<b>$ cd minesweeper</b>
+<b>$ touch index.html styles.css game.js</b></pre></div><div class="folder-drawing"><div class="folder-up">project folder</div><div class="folder-branch">├── index.html<br>├── styles.css<br>└── game.js</div></div></div><div class="command-key"><span><b>pwd</b> where am I?</span><span><b>ls</b> what’s here?</span><span><b>cd</b> go there</span><span><b>mkdir</b> make folder</span><span><b>touch</b> make file</span></div><details class="speaker-notes"><summary>Teacher notes · connect the commands to files</summary><p>The terminal is another interface for the same computer. pwd prints the current location, ls lists its contents, cd moves, mkdir creates a folder, touch creates a file. Ask students to predict where touch will put each file before running it.</p></details>
+  </template>
+  <template data-title="Give the browser a page to draw" data-time="4 MIN" data-label="04 · WRITE HTML">
+    <div class="eyebrow">STEP 1 · PAGE STRUCTURE</div><h2>Start with the <span class="accent">skeleton</span>.</h2><div class="source-to-page"><div class="code-window"><div class="window-label">index.html</div><pre><span class="code-tag">&lt;main&gt;</span>
+  <span class="code-tag">&lt;h1&gt;</span>Minesweeper<span class="code-tag">&lt;/h1&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>Find the safe squares.<span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;button&gt;</span>New game<span class="code-tag">&lt;/button&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">id</span>=<span class="code-string">"board"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+<span class="code-tag">&lt;/main&gt;</span></pre></div><div class="source-arrow">browser reads</div><div class="render-window"><div class="window-label">PAGE CONTENT</div><h3>Minesweeper</h3><p>Find the safe squares.</p><button class="sample-button">New game</button><div class="render-cell">?</div></div></div><div class="one-line">HTML says <b>what each piece is</b>. It does not decide how the board looks or plays.</div><details class="speaker-notes"><summary>Teacher notes · elements and nesting</summary><p>Talk through one element at a time. h1 names the main heading, p is an instruction, button is an action, div is a container. Add head/title and links to styles.css and game.js in the full document. The browser parses nested elements into a tree called the DOM.</p></details>
+  </template>
+  <template data-title="Style the grid" data-time="4 MIN" data-label="05 · WRITE CSS">
+    <div class="eyebrow">STEP 2 · CSS GRID</div><h2>Make nine columns with <span class="accent">CSS Grid</span>.</h2><div class="css-grid-demo"><div class="nine-cells"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><pre>.board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 3px;
+}
+.cell { aspect-ratio: 1; }</pre></div><div class="one-line">The same 81 buttons can look covered, numbered, flagged, or revealed with different classes.</div><details class="speaker-notes"><summary>Teacher notes · CSS does the layout</summary><p>Explain that CSS Grid arranges children into rows and columns. JavaScript will create 81 buttons inside the board container. CSS handles equal sizing and gaps. Keep style decisions modest so students can focus on behavior.</p></details>
+  </template>
+  <template data-title="Represent the board as data" data-time="5 MIN" data-label="06 · JAVASCRIPT DATA">
+    <div class="eyebrow">STEP 3 · WHAT THE GAME REMEMBERS</div><h2>A square is data <span class="accent">before</span> it is a button.</h2><div class="board-thinking"><div class="number-demo"><div class="neighbor-grid"><span></span><span></span><span></span><span></span><b>1</b><span>✹</span><span></span><span></span><span></span></div><small>example square · one nearby mine</small></div><div class="code-window model-window"><div class="window-label">ONE CELL</div><pre>{
+  r: 2, c: 4,
+  mine: false,
+  count: 1,
+  revealed: false,
+  flagged: false
+}</pre></div></div><div class="one-line">The array is the <b>truth about the game</b>. Buttons show that truth.</div><details class="speaker-notes"><summary>Teacher notes · rows and columns</summary><p>Rows and columns begin at zero in JavaScript. The 2D array is cells[row][column]. Each object stores the facts about one location. A button is just how a player sees and changes that data. This separation makes rendering and game rules easier to reason about.</p></details>
+  </template>
+  <template data-title="Find the touching squares" data-time="4 MIN" data-label="07 · NEIGHBOR LOGIC">
+    <div class="eyebrow">STEP 4 · COUNT AROUND A CELL</div><h2>Check the eight <span class="accent">neighbors</span>.</h2><div class="neighbor-lesson"><div class="neighbor-grid large-neighbors"><span>↖</span><span>↑</span><span>↗</span><span>←</span><b>?</b><span>→</span><span>↙</span><span>↓</span><span>↘</span></div><div class="code-window"><div class="window-label">CHECK NEARBY ROWS & COLUMNS</div><pre>for (let dr = -1; dr &lt;= 1; dr++) {
+  for (let dc = -1; dc &lt;= 1; dc++) {
+    if (dr === 0 &amp;&amp; dc === 0) continue;
+    // check row + dr, column + dc
+  }
+}</pre></div></div><div class="key-sentence">At an edge, some neighbors are <b>outside the board</b>. Skip them.</div><details class="speaker-notes"><summary>Teacher notes · reason about the bounds</summary><p>Draw a 3 by 3 neighborhood on the board. The center square is not its own neighbor. The eight row/column offsets are −1, 0, +1. Before reading a neighbor, check row and column are each between zero and board size minus one. A corner has three valid neighbors; an edge has five.</p></details>
+  </template>
+  <template data-title="Place mines, then calculate clues" data-time="5 MIN" data-label="08 · SET UP A ROUND">
+    <div class="eyebrow">STEP 5 · BUILD THE GAME BOARD</div><h2>Randomize mines. Then count them.</h2><div class="setup-flow"><div class="setup-step"><b>1</b><span>First click</span><small>remember safe cell</small></div><i>→</i><div class="setup-step"><b>2</b><span>Place 10 mines</span><small>anywhere but safe cell</small></div><i>→</i><div class="setup-step"><b>3</b><span>Count neighbors</span><small>store each number</small></div></div><div class="source-to-page compact-source"><div class="code-window"><div class="window-label">THE ORDER MATTERS</div><pre>placeMines(firstCell);
+// also counts neighbors</pre></div><div class="source-arrow">before</div><div class="render-window"><div class="window-label">FIRST CLICK</div><div class="render-cell">safe</div></div></div><details class="speaker-notes"><summary>Teacher notes · safe first click</summary><p>Wait to place mines until the first square is clicked. Exclude that cell from candidate locations, place ten random mines, then calculate count for every cell by checking neighbors. Our agreed rule promises the first cell is safe but not necessarily zero.</p></details>
+  </template>
+  <template data-title="Draw buttons from the data" data-time="4 MIN" data-label="09 · RENDER THE BOARD">
+    <div class="eyebrow">STEP 6 · RENDER</div><h2>Turn each data cell into a <span class="accent">button</span>.</h2><div class="render-steps"><div class="nine-cells"><i>?</i><i>?</i><i class="open">1</i><i>?</i><i>?</i><i>?</i><i>?</i><i class="flagged-cell">⚑</i><i>?</i></div><div class="code-window"><div class="window-label">ONE BUTTON FOR EACH CELL</div><pre>const button = document.createElement('button');
+button.dataset.r = cell.r;
+button.dataset.c = cell.c;
+button.className = 'cell';
+board.append(button);</pre></div></div><div class="one-line">Different data → different text and CSS classes.</div><details class="speaker-notes"><summary>Teacher notes · draw from state</summary><p>Clear the old board, then create one button for each cell object. Store row and column on the button so a click can find the corresponding cell. Rendering should be a predictable translation from data to page.</p></details>
+  </template>
+  <template data-title="Handle one reveal click" data-time="4 MIN" data-label="10 · EVENTS + REVEAL">
+    <div class="eyebrow">STEP 7 · LISTEN FOR A CLICK</div><h2>Click → find → update → <span class="accent">draw</span>.</h2><div class="click-flow"><div class="flow-drawing"><div class="drawn-cell">?</div><span>click a cell</span></div><div class="large-arrow">→</div><div class="flow-data"><div class="data-label">UPDATE ITS DATA</div><code>cell.revealed = true</code><code>if mine → lose</code><code>otherwise → show count</code></div><div class="large-arrow">→</div><div class="flow-drawing"><div class="drawn-cell open">1</div><span>update button</span></div></div><div class="one-line">The HTML source file stays put. The browser’s <b>current page state</b> changes.</div><details class="speaker-notes"><summary>Teacher notes · click handler</summary><p>A click is an event. The handler reads row and column from the clicked button, looks up the cell object, changes revealed to true, then redraws it. If cell.mine is true, show the mines and finish the round. The complete code uses updateCell for the redraw.</p></details>
+  </template>
+  <template data-title="Reveal an empty area" data-time="5 MIN" data-label="11 · FLOOD FILL">
+    <div class="eyebrow">STEP 8 · A ZERO OPENS SPACE</div><h2>Empty cells lead to other <span class="accent">empty cells</span>.</h2><div class="flood-drawing"><div class="flood-grid"><i class="opened"></i><i class="opened"></i><i class="edge-num">1</i><i></i><i class="opened"></i><i class="opened zero">0</i><i class="opened"></i><i class="edge-num">1</i><i></i><i class="opened"></i><i class="opened"></i><i class="edge-num">1</i><i></i><i></i><i></i><i></i></div><div class="flood-copy"><b>count is zero</b><span>Queue its neighbors.</span><span>Reveal safe cells.</span><span>Repeat until numbers form an edge.</span></div></div><div class="key-sentence">A queue keeps track of which safe cells still need to be opened.</div><details class="speaker-notes"><summary>Teacher notes · flood fill in plain language</summary><p>If a revealed cell has count zero, add its valid neighbors to a queue. Reveal each one; when that neighbor is also zero, add its neighbors too. Stop at numbers, mines, already revealed or flagged cells. This is called flood fill; explain the behavior before the term.</p></details>
+  </template>
+  <template data-title="Finish the game rules" data-time="5 MIN" data-label="12 · FLAGS, TIMER, WIN">
+    <div class="eyebrow">STEP 9 · THE REST OF THE ROUND</div><h2>Small features, same <span class="accent">cell data</span>.</h2><div class="finish-rules"><div><span>⚑</span><b>Flag</b><small>mark a covered square</small></div><div><span>◷</span><b>Timer</b><small>start at first reveal</small></div><div><span>↻</span><b>Reset</b><small>make a fresh board</small></div><div><span>✓</span><b>Win</b><small>open all 71 safe cells</small></div></div><div class="one-line">Each feature changes state, then updates what the player sees.</div><details class="speaker-notes"><summary>Teacher notes · define the exact completion rules</summary><p>Flagging never reveals a square; stop at ten simultaneous flags. Start the timer with the first click and stop on win/loss. Reset clears timer, flags, and board state. Win when revealed safe count is rows × columns minus ten = 71. These are the agreed class behaviors.</p></details>
+  </template>
+  <template data-title="Playtest our implementation" data-time="4 MIN" data-label="13 · TEST THE GAME">
+    <div class="eyebrow">STEP 10 · TRY TO BREAK IT</div><h2>Test the edges, not just the middle.</h2><div class="test-board"><div class="nine-cells"><i class="open">1</i><i>?</i><i>?</i><i>?</i><i class="mine-cell">✹</i><i>?</i><i>?</i><i>?</i><i>?</i></div><div class="test-list"><p><b>□</b> corner and edge counts</p><p><b>□</b> first click is safe</p><p><b>□</b> zero opens safe neighbors</p><p><b>□</b> flag, reset, win, and loss</p></div></div><div class="one-line">A good test tries a case that might <b>surprise the code</b>.</div><details class="speaker-notes"><summary>Teacher notes · pair testing</summary><p>Ask one partner to play and one to observe. Try edge cases deliberately. If an error appears, describe steps to reproduce it. Testing by playing does not prove every case, but it helps us find mistakes quickly.</p></details>
+  </template>
+  <template data-title="Keep the class code easy to share" data-time="3 MIN" data-label="14 · GIT AS A TEAM">
+    <div class="eyebrow">GIT · SAVE A REVIEWABLE CHANGE</div><h2>Keep the game’s history <span class="accent">clear</span>.</h2><div class="git-map"><div class="git-place"><b>Working files</b><small>you edited</small></div><span>→</span><div class="git-place"><b>Staging</b><small>git add</small></div><span>→</span><div class="git-place"><b>Local commit</b><small>git commit</small></div><span>→</span><div class="git-place"><b>Share branch</b><small>git push</small></div></div><div class="pr-steps"><span>feature branch</span><i>→</i><span>small change</span><i>→</i><span>review diff</span><i>→</i><span>Pull Request</span></div><details class="speaker-notes"><summary>Teacher notes · local and shared changes</summary><p>Git gives the team a history of snapshots. Staging selects what belongs in the next commit. A commit is local until pushed. A feature branch keeps a focused change separate for review. GitHub can host the remote repository, but the concepts are separate.</p></details>
+  </template>
+  <template data-title="Code the game together" data-time="2 MIN" data-label="15 · START BUILDING">
+    <div class="finish-slide"><div class="eyebrow">THE PLAN IS SET · NOW WE TYPE</div><h1>One board.<br>One rule at<br>a <span class="accent">time.</span></h1><div class="finish-list"><p><b>01</b> Agree on behavior</p><p><b>02</b> Make the HTML shell</p><p><b>03</b> Model each cell</p><p><b>04</b> Render and reveal</p><p><b>05</b> Playtest together</p><p><b>06</b> Commit the work</p></div><button class="assignment-jump" data-open-assignment>Open the coding plan <span>→</span></button></div>
+  </template>
+</div>
+<script src="deck.js"></script>
+</body>
+</html>

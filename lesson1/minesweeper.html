@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f3ed">
+  <title>Minesweeper — Frontend Teacher Demo</title>
+  <link rel="stylesheet" href="minesweeper.css">
+</head>
+<body>
+  <header class="game-header"><a href="index.html">← Back to workshop</a><span>TEACHER DEMO · FRONTEND ONLY</span></header>
+  <main class="game-layout">
+    <section class="game-main" aria-labelledby="gameTitle">
+      <div class="game-intro"><div class="eyebrow">A BROWSER GAME</div><h1 id="gameTitle">Minesweeper</h1><p>Find every safe square. Numbers tell you how many mines are touching that square.</p></div>
+      <div class="game-toolbar"><span class="counter"><small>MINES</small><b id="mineCount">010</b></span><button id="resetGame" class="face-button" aria-label="Start a new game">🙂</button><span class="counter"><small>TIME</small><b id="timer">000</b></span></div>
+      <div id="gameStatus" class="game-status" aria-live="polite">Choose a square to begin. Your first click is always safe.</div>
+      <div id="board" class="board" role="grid" aria-label="Minesweeper board"></div>
+      <div class="game-help">Click to reveal · Right-click or Shift-click to flag</div>
+      <details class="teacher-notes"><summary>Teacher notes: what is happening in the frontend?</summary><div class="teacher-notes-body"><p><b>The board is data.</b> JavaScript keeps a 9 × 9 array. Each cell tracks whether it is a mine, revealed, or flagged. The browser draws buttons from that data.</p><p><b>A click is an event.</b> The browser tells JavaScript which cell was clicked. JavaScript updates the game state, then redraws the board.</p><p><b>The page holds the game.</b> The board and timer stay in this browser page. Refreshing starts a new round.</p></div></details>
+    </section>
+    <aside class="teacher-aside"><div class="eyebrow">WALKTHROUGH PROMPTS</div><h2>Ask before you explain</h2><ol><li>What information does a number in one square represent?</li><li>What data would JavaScript need to remember about each cell?</li><li>When a square is clicked, what changes: the HTML file, the data, or the rendered page?</li><li>Which function handles a cell click? Which function draws its new appearance?</li></ol><div class="aside-note"><b>Frontend only</b><p>The board, score counters, and timer are managed by JavaScript in this page. Refresh to begin a new round.</p></div><a class="source-link" href="minesweeper.js" target="_blank" rel="noreferrer">Open the JavaScript source ↗</a></aside>
+  </main>
+  <script src="minesweeper.js"></script>
+</body>
+</html>
