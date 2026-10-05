@@ -18,7 +18,7 @@ body{background:var(--bg);color:var(--text);font-size:16px}
 .live-dot{display:none}
 .progress-track{height:3px;background:#e5e1d7}
 .progress-track div{background:var(--green)}
-.mode-tabs{position:absolute;left:50%;transform:translateX(-50%);height:100%;display:flex;align-items:stretch;gap:22px}
+.mode-tabs{position:absolute;left:50%;transform:translateX(-50%);height:100%;display:flex;align-items:stretch;gap:22px;z-index:2}
 .mode-tab{border:0;border-bottom:2px solid transparent;background:transparent;color:#626960;padding:0 5px;font:500 14px var(--sans);cursor:pointer}
 .mode-tab:hover{color:var(--text)}
 .mode-tab.active{border-bottom-color:#42644c;color:#263b2b;font-weight:650}

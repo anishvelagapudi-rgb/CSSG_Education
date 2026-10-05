@@ -1,0 +1,12 @@
+{
+  "name": "cssg-minesweeper-workshop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Beginner friendly Minesweeper workshop and interactive walkthrough",
+  "scripts": {
+    "start": "http-server -p 8000 -c-1"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

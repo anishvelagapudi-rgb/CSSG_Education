@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f3ed">
+  <title>Minesweeper, one step at a time · CS + SG</title>
+  <link rel="stylesheet" href="walkthrough.css">
+</head>
+<body>
+  <header class="walk-header"><a href="index.html" class="back">← Workshop</a><span class="brand">CS + SG <small>BEGINNER WALKTHROUGH</small></span><a class="play-link" href="minesweeper.html">Play Minesweeper ↗</a></header>
+  <main>
+    <section class="hero"><p class="eyebrow">START HERE · NO EXPERIENCE NEEDED</p><h1>Let’s build a game,<br><span>one small idea at a time.</span></h1><p class="intro">A webpage is a set of instructions for your browser. We’ll meet those instructions in a tiny example, then connect them to a playable Minesweeper game. Read a step, try it, and come back whenever you need a refresher.</p><a href="#first-page" class="start">Start with the first page ↓</a><div class="path"><span>Page</span><i>→</i><span>Style</span><i>→</i><span>Data</span><i>→</i><span>Clicks</span><i>→</i><span>Game</span></div></section>
+
+    <section class="lesson" id="first-page"><div class="step">01 · A PAGE</div><h2>First, give the browser something to show.</h2><p>HTML is the page’s structure: headings, words, buttons, and containers. The browser reads these tags and turns them into a page.</p>
+      <div class="demo-grid"><div class="code-box"><div class="box-title">Try changing the words</div><textarea id="htmlInput" spellcheck="false" aria-label="Editable HTML example"><h1>My first game</h1>
+<p>Click a square to start.</p>
+<button>New game</button></textarea><p class="hint">Try changing “My first game” or the instruction.</p></div><div class="preview-box"><div class="box-title">What the browser shows</div><iframe id="htmlPreview" title="Live webpage preview" sandbox=""></iframe></div></div>
+      <div class="line-guide"><h3>Read each line</h3><p><code>&lt;h1&gt;...&lt;/h1&gt;</code> makes the main heading. The opening tag starts it; the closing tag has a slash.</p><p><code>&lt;p&gt;...&lt;/p&gt;</code> makes a paragraph. <code>&lt;button&gt;...&lt;/button&gt;</code> makes a button. Right now it looks like a button, but it has no action.</p></div>
+    </section>
+
+    <section class="lesson"><div class="step">02 · A LITTLE STYLE</div><h2>CSS changes how the page looks.</h2><p>HTML names an element; CSS can change its color, spacing, and size. Select the button below to see a style change.</p><div class="style-demo"><button id="styleButton" class="sample">New game</button><div><code>background: #315b45;</code><br><small>This rule gives the button a dark green background.</small></div><button id="changeStyle">Try a different color</button></div><div class="line-guide"><h3>One rule, three parts</h3><p><code>button</code> means “find every button.” Braces hold the style instructions. <code>color</code> and <code>background</code> are properties; the values after the colon tell the browser what to use.</p></div></section>
+
+    <section class="lesson"><div class="step">03 · A CLICK</div><h2>JavaScript makes things respond.</h2><p>A click is an event. JavaScript can listen for it, change information, and update the page.</p><div class="event-demo"><button id="clickDemo">Click me</button><span id="clickMessage" aria-live="polite">Nothing has happened yet.</span></div><div class="line-guide"><h3>Follow the click</h3><p><code>addEventListener('click', ...)</code> means “when this button is clicked, run this instruction.” Inside the instruction, we change the message. Minesweeper follows the same idea: a square click changes the cell data, then the board is drawn again.</p></div></section>
+
+    <section class="lesson"><div class="step">04 · GAME DATA</div><h2>A square is a small collection of facts.</h2><p>The game remembers what is true about every square. Here is one square before a game starts:</p><div class="data-card"><pre><code>{
+  row: 0,
+  column: 0,
+  isMine: false,
+  nearbyMines: 0,
+  isRevealed: false
+}</code></pre><div><p><b>row, column</b> tell us where the square is.</p><p><b>isMine</b> answers: is there a mine here?</p><p><b>nearbyMines</b> stores the number to show.</p><p><b>isRevealed</b> tells us whether the player has opened it.</p></div></div><div class="mini-interaction"><p>Click to reveal this example square:</p><button id="cellDemo" class="covered-cell" aria-label="Covered example square">?</button><span id="cellMessage" aria-live="polite">The square is covered.</span></div><p class="plain-note">In the real game, the square starts as data. JavaScript uses that data to create a button in the page.</p></section>
+
+    <section class="lesson"><div class="step">05 · HOW THE BOARD GETS MADE</div><h2>Make one square. Repeat it across the board.</h2><p>Imagine a 3 by 3 board. A loop repeats the same small instruction once for each square. CSS Grid places the buttons into rows and columns.</p><div class="board-explainer"><div class="example-board" aria-label="Example three by three Minesweeper board"><button>?</button><button class="open">1</button><button>?</button><button>?</button><button class="open">2</button><button>?</button><button>?</button><button>?</button><button>?</button></div><div class="line-guide"><h3>What to notice</h3><p>Each covered tile is a real button. One revealed tile shows <b>1</b>: it has one neighboring mine. A corner has fewer neighbors than a middle square, so the code checks that a neighbor is still inside the board.</p></div></div></section>
+
+    <section class="lesson"><div class="step">06 · A CLICK IN THE REAL GAME</div><h2>Follow one click from start to finish.</h2><p>Open the playable game in another tab if you like. Then follow this sequence for any square you click.</p><ol class="sequence"><li><b>Browser hears the click</b><span>The button’s click listener identifies which square was chosen.</span></li><li><b>JavaScript checks the square</b><span>Has the game ended? Is the square already open or flagged?</span></li><li><b>Game data changes</b><span>A safe square becomes revealed. A mine ends the round.</span></li><li><b>Browser draws the new view</b><span>The button shows a number, an empty space, a flag, or a mine.</span></li></ol><div class="callout"><b>Keep this sentence:</b> click → check the data → change the data → draw the page again.</div></section>
+
+    <section class="lesson"><div class="step">07 · THE ACTUAL MINESWEEPER CODE</div><h2>A guided tour of the important lines.</h2><p>The complete teacher game is more code because it handles every edge case. These are its main pieces, translated into plain language.</p>
+      <details class="code-step" open><summary>1. Set the board size and find the page elements</summary><pre><code>const ROWS = 9;
+const COLUMNS = 9;
+const MINE_TOTAL = 10;
+
+const boardElement = document.getElementById('board');</code></pre><p><code>const</code> gives a name to a value we do not plan to replace. The first three lines describe our game. <code>getElementById</code> finds the empty board container in the HTML so JavaScript can put buttons inside it.</p></details>
+      <details class="code-step"><summary>2. Describe one square</summary><pre><code>function makeCell(row, column) {
+  return {
+    r: row,
+    c: column,
+    mine: false,
+    count: 0,
+    revealed: false,
+    flagged: false
+  };
+}</code></pre><p><code>function</code> names a reusable set of instructions. Each time <code>makeCell</code> is called, it returns one object: position, mine status, neighbor count, and what the player has done.</p></details>
+      <details class="code-step"><summary>3. Create the board from rows and columns</summary><pre><code>function createEmptyBoard() {
+  return Array.from({ length: ROWS }, (_, row) =>
+    Array.from({ length: COLUMNS }, (_, column) =>
+      makeCell(row, column)
+    )
+  );
+}</code></pre><p>The outer repeat makes rows. For each row, the inner repeat makes columns. Each position gets its own new cell. The result is a grid stored as <code>cells[row][column]</code>.</p></details>
+      <details class="code-step"><summary>4. Draw buttons from the data</summary><pre><code>function drawBoard() {
+  boardElement.replaceChildren();
+  cells.flat().forEach(cell => {
+    const button = document.createElement('button');
+    button.className = 'cell';
+    button.addEventListener('click', () => revealCell(cell));
+    boardElement.append(button);
+  });
+}</code></pre><p>Clear the old board. Visit each cell. Make a button, give it a click listener, and add it to the board container. The full game also adds labels and flag behavior to each button.</p></details>
+      <details class="code-step"><summary>5. Reveal a square</summary><pre><code>function revealCell(cell) {
+  if (hasFinished || cell.flagged || cell.revealed) return;
+  if (cell.mine) {
+    finishGame(false);
+    return;
+  }
+  cell.revealed = true;
+  drawCell(cell);
+}</code></pre><p>The first line is a guard: if the game is over, or the square cannot be opened, stop here. If it is a mine, finish with a loss. Otherwise mark the data as revealed and update that square’s button.</p></details>
+      <details class="code-step"><summary>6. Count neighboring mines</summary><pre><code>for (let rowOffset = -1; rowOffset <= 1; rowOffset++) {
+  for (let columnOffset = -1; columnOffset <= 1; columnOffset++) {
+    // Check the surrounding positions.
+  }
+}</code></pre><p>Two small loops look at the row above, the same row, and the row below. They do the same for columns. Skipping the square itself leaves up to eight neighbors. Before using one, the full code checks it is still on the board.</p></details>
+      <details class="code-step"><summary>7. Empty spaces open an area</summary><pre><code>if (cell.count === 0) {
+  revealEmptyArea(cell);
+} else {
+  cell.revealed = true;
+  drawCell(cell);
+}</code></pre><p><code>===</code> asks whether two values are equal. A zero means no neighboring mines, so the game opens the connected empty area. A numbered square only opens itself.</p></details>
+      <details class="code-step"><summary>8. Reset starts with fresh data</summary><pre><code>function startNewGame() {
+  cells = createEmptyBoard();
+  drawBoard();
+  updateCounters();
+}</code></pre><p>The actual reset also clears the timer and game flags. It creates a brand new board, draws it, and refreshes the counters. This is why reset does not need to reload the whole webpage.</p></details>
+    </section>
+
+    <section class="lesson final-lesson"><div class="step">YOU HAVE THE MAP</div><h2>Three jobs, working together.</h2><div class="three-jobs"><div><b>HTML</b><p>Creates the board container, buttons, and counters.</p></div><div><b>CSS</b><p>Arranges the squares and gives them their colors.</p></div><div><b>JavaScript</b><p>Remembers the game and responds to clicks.</p></div></div><p>Now try a round and explain one click out loud: “The browser heard __. The data changed __. The page showed __.”</p><a class="start" href="minesweeper.html">Play the game →</a><p class="home-link"><a href="index.html">Return to the workshop slides</a></p></section>
+  </main>
+  <script src="walkthrough.js"></script>
+</body>
+</html>

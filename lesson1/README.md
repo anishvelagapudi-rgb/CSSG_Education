@@ -1,5 +1,18 @@
 # CS + SG Production Team: Interactive Web Development Lesson
 
+## Run the beginner walkthrough
+
+Install the project dependencies. This downloads a small local web server used to preview the workshop pages:
+
+```sh
+npm install
+npm start
+```
+
+Open <http://localhost:8000> and choose **Minesweeper walkthrough** in the top navigation. The standalone playable game is at <http://localhost:8000/minesweeper.html>. Stop the server with Ctrl+C in the terminal.
+
+The incremental student template is in `minesweeper-project/starter/`; the completed reference is in `minesweeper-project/completed/`. The starter includes a checkpoint-by-checkpoint guide and is served at <http://localhost:8000/minesweeper-project/starter/>.
+
 ## Project Goal
 
 Build a web-based presentation and interactive lesson for the CS + SG
@@ -10,11 +23,9 @@ function as the presentation, teaching interface, interactive demo
 environment, and eventually the guided workspace for the students'
 hands-on exercises.
 
-The audience is students who will likely arrive with basic Python
-knowledge. We can assume they understand foundational computer concepts
-such as the difference between a file and a folder. We should **not**
-assume that they understand web development, browser rendering, the CLI,
-Git internals, branching, remotes, or production-team workflows.
+The audience is complete beginners. Do not assume they have Python or
+Node.js installed, have used a terminal, or know the difference between
+a file and a folder. Explain each tool before asking students to use it.
 
 The overall goal is to prepare students to become useful contributors on
 a production team.
@@ -286,53 +297,25 @@ The desired takeaway is:
 
 # Section 4: CLI
 
-The CLI should be introduced because students will use it for the actual
-workflow.
-
-Assume students already understand files and folders.
-
-Do not waste time explaining what a directory is.
+The CLI should be introduced because students will use it in the actual workflow. Explain files, folders, and the terminal first; do not assume students already know them.
 
 Teach the mental model:
 
-> A terminal is another interface for interacting with the computer.
-> Instead of clicking through a GUI, you give the shell commands.
+> A terminal is another way to interact with the computer. A command is a short instruction. Commands run from a current folder.
 
-Introduce only the commands necessary for the lesson initially.
+Start with `pwd` (where am I?), `ls` (what is in this folder?), `cd` (move to a folder), and `mkdir` (make a folder). These commands work in PowerShell on Windows and common terminals on Mac and Linux. Create the one `index.html` file in a code editor so the example does not depend on a shell-specific `touch` command.
 
-Likely commands:
-
-``` bash
-pwd
-ls
-cd
-mkdir
-touch
-```
-
-Potentially later:
-
-``` bash
-cat
-```
-
-The lesson should emphasize understanding the current working directory.
-
-Students should actually create their project using the CLI.
+The CLI belongs in the project workflow: create or choose a project folder, check the location, then open the starter file in the editor and inspect it in the browser.
 
 Example:
 
-``` bash
+```bash
 mkdir cs-sg-site
 cd cs-sg-site
-touch index.html
+ls
 ```
 
-Then inspect the result.
-
-The CLI should not be treated as a separate unrelated lecture. It should
-be introduced because it is the natural interface they will use for the
-development workflow.
+Then create or copy `index.html` using the code editor.
 
 ------------------------------------------------------------------------
 
@@ -829,7 +812,7 @@ slides. The teacher Minesweeper demo is also available at
 <http://localhost:8000/minesweeper.html>.
 
 The Slides stay on the frontend and walk the class through coding the game:
-agree on a shared implementation, create HTML and CSS, model the board,
+agree on a shared implementation, create one HTML file with style and script sections, model the board,
 calculate neighbors, render cells, handle reveals, finish the round, and
 playtest. Instructor notes carry the longer explanations. The Assignment
 tab provides about 60 minutes of pair coding. Slide talk/demo timings total
@@ -837,6 +820,5 @@ about 59 minutes. Networking and backend development are reserved for a later cl
 
 The old `HTML Slides.pdf` source reference is not present in the project
 folder. The workshop content remains editable in `index.html` slide
-templates and `deck.js`; the playable frontend is in `minesweeper.html`,
-`minesweeper.css`, and `minesweeper.js`. The shared classroom rules and
+templates and `deck.js`; the playable one-file frontend is in `minesweeper.html`. The shared classroom rules and
 data model are recorded in `IMPLEMENTATION.md`.

@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Build Minesweeper · One-File Student Starter</title>
+  <style>
+    :root {
+      font-family: system-ui, sans-serif;
+      color: #25352d;
+      background: #f5f5ee;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+    }
+    header {
+      padding: 14px max(18px, calc((100vw - 760px) / 2));
+      background: #17231c;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 12px;
+    }
+    header a {
+      color: #d8f2b3;
+      text-decoration: none;
+    }
+    main {
+      max-width: 760px;
+      margin: 32px auto;
+      padding: 0 18px;
+    }
+    .eyebrow {
+      color: #52775f;
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: .12em;
+    }
+    h1 {
+      margin: 5px 0;
+      font-size: 40px;
+    }
+    .intro, .hint {
+      color: #59675e;
+    }
+    .game {
+      max-width: 450px;
+      padding: 15px;
+      background: #fffefa;
+      border: 1px solid #d9dfd6;
+      border-radius: 9px;
+    }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #e9ede5;
+      padding: 9px 12px;
+      font: 12px ui-monospace, monospace;
+    }
+    #mineCount {
+      font-size: 17px;
+      color: #315b45;
+    }
+    #reset {
+      border: 1px solid #c9d2c7;
+      border-radius: 5px;
+      background: white;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+    #status {
+      min-height: 28px;
+      color: #56665c;
+      font-size: 13px;
+    }
+    #board {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 3px;
+      padding: 4px;
+      background: #aab5a6;
+    }
+    .cell {
+      aspect-ratio: 1;
+      border: 0;
+      background: #c6d0c2;
+      box-shadow: inset 2px 2px #e3e9df, inset -2px -2px #9baa98;
+      font-size: 17px;
+      font-weight: 800;
+      color: #37649b;
+      cursor: pointer;
+    }
+    .cell.open {
+      background: #f3f4ed;
+      box-shadow: none;
+      cursor: default;
+    }
+    .cell.mine, .cell.flag {
+      color: #a54236;
+    }
+    .checkpoint {
+      margin-top: 22px;
+      max-width: 650px;
+      padding: 15px 18px;
+      border-left: 3px solid #83a76e;
+      background: #fffefa;
+    }
+    .checkpoint h2 {
+      margin: 4px 0;
+      font-size: 20px;
+    }
+    code {
+      background: #edf1e9;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+    .check {
+      color: #426747;
+      font-size: 13px;
+    }
+    details {
+      max-width: 650px;
+      margin-top: 15px;
+      padding: 12px 15px;
+      background: #fffefa;
+      border: 1px solid #d9dfd6;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: 700;
+    }
+    pre {
+      overflow: auto;
+      padding: 13px;
+      background: #17231c;
+      color: #e8f1e8;
+      font: 12px/1.7 ui-monospace, monospace;
+    }
+  </style>
+</head>
+<body>
+  <header><a href="../../index.html">← Workshop</a><span>ONE FILE · STUDENT STARTER</span></header>
+  <main>
+    <p class="eyebrow">THE GAME CLASS IS ALREADY HERE</p><h1>Build Minesweeper</h1>
+    <p class="intro">This one file has the page, its styles, and the game class. The board works now. Make one small change, save, and refresh to check it.</p>
+    <section class="game" aria-label="Minesweeper game"><div class="toolbar"><span>MINES LEFT: <b id="mineCount">010</b></span><button id="reset">New game</button></div><p id="status" aria-live="polite">Checkpoint 1 is done: click a square to open it.</p><div id="board" role="grid" aria-label="Minesweeper board"></div><p class="hint">Click to open · Right-click or Shift-click to flag</p></section>
+    <section class="checkpoint"><p class="eyebrow">NEXT SMALL STEP</p><h2>Checkpoint 2 · Add a few known mines</h2><p>Find <code>placeMines</code> in the class. Put mines in fixed places so it is easy to predict where they are. Find <code>reveal</code> and make a mine end the round.</p><p class="check">✓ Check: first click a known safe square, then click a known mine.</p></section>
+    <details><summary>See all checkpoints</summary><ol><li>Done: open one safe square.</li><li>Add known mines and loss behavior.</li><li>Find neighbors and count nearby mines.</li><li>Replace fixed locations with random mines; keep the first click safe.</li><li>Open the connected empty area around zeroes.</li><li>Finish win behavior and test edge cases.</li></ol><p>After each step, save and refresh. The full checklist and class notes are in the neighboring README.</p></details>
+    <p><a href="../completed/index.html">Finished one-file reference</a> · try the checkpoint before looking.</p>
+  </main>
+  <script>
+    // Game data and rules belong to this class, not to the page.
+    class Minesweeper {
+      // The constructor runs when we make a new Minesweeper object.
+      constructor() {
+        this.rows = 9;
+        this.columns = 9;
+        this.mineTotal = 10;
+        this.newGame();
+      }
+
+      newGame() {
+        this.board = [];
+        for (let row = 0; row < this.rows; row++) {
+          const newRow = [];
+          for (let column = 0; column < this.columns; column++) {
+            newRow.push({
+              row,
+              column,
+              hasMine: false,
+              number: 0,
+              isOpen: false,
+              isFlagged: false
+            });
+          }
+          this.board.push(newRow);
+        }
+        this.hasStarted = false;
+        this.isOver = false;
+        this.flagsPlaced = 0;
+        this.safeSquaresOpened = 0;
+      }
+
+      getNeighbors(cell) {
+        const neighbors = [];
+        // The two loops will look one square in each direction.
+        // TODO 3: Look one row and column in every direction.
+        // Skip this cell and any position outside the board.
+        return neighbors;
+      }
+
+      placeMines(safeCell) {
+        // TODO 2: Set hasMine = true on a few chosen cells.
+        // TODO 4: Replace the fixed locations with random safe locations.
+        this.countNumbers();
+      }
+
+      countNumbers() {
+        // TODO 3: For each cell, count its mine neighbors into cell.number.
+      }
+
+      reveal(row, column) {
+        const cell = this.board[row][column];
+        if (this.isOver || cell.isOpen || cell.isFlagged) return 'ignored';
+        // Mines are placed on the first click so that square can be kept safe.
+        if (!this.hasStarted) {
+          this.hasStarted = true;
+          this.placeMines(cell);
+        }
+        if (cell.hasMine) {
+          this.isOver = true;
+          return 'lost';
+        }
+        cell.isOpen = true;
+        this.safeSquaresOpened++;
+        // TODO 5: If number is zero, open the connected safe area too.
+        // TODO 6: Win when every safe square has been opened.
+        return 'opened';
+      }
+
+      toggleFlag(row, column) {
+        const cell = this.board[row][column];
+        if (this.isOver || cell.isOpen) return false;
+        if (!cell.isFlagged && this.flagsPlaced >= this.mineTotal) return false;
+        cell.isFlagged = !cell.isFlagged;
+        this.flagsPlaced += cell.isFlagged ? 1 : -1;
+        return true;
+      }
+    }
+
+    // Page code: listen to buttons and draw the game's data.
+    const boardElement = document.getElementById('board');
+    const statusElement = document.getElementById('status');
+    const countElement = document.getElementById('mineCount');
+    const game = new Minesweeper();
+
+    function drawBoard() {
+      boardElement.replaceChildren();
+      for (const row of game.board) {
+        for (const cell of row) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'cell';
+          button.setAttribute('role', 'gridcell');
+          if (cell.isFlagged) {
+            button.classList.add('flag');
+            button.textContent = '⚑';
+          } else if (cell.isOpen) {
+            button.classList.add('open');
+            button.disabled = true;
+            if (cell.hasMine) button.textContent = '✹';
+            else if (cell.number > 0) button.textContent = cell.number;
+          } else if (game.isOver && cell.hasMine) {
+            button.classList.add('open', 'mine');
+            button.textContent = '✹';
+          }
+          button.addEventListener('click', event => {
+            if (event.shiftKey) flagSquare(cell.row, cell.column);
+            else openSquare(cell.row, cell.column);
+          });
+          button.addEventListener('contextmenu', event => {
+            event.preventDefault();
+            flagSquare(cell.row, cell.column);
+          });
+          boardElement.append(button);
+        }
+      }
+      countElement.textContent = String(Math.max(0, game.mineTotal - game.flagsPlaced)).padStart(3, '0');
+    }
+
+    function openSquare(row, column) {
+      const result = game.reveal(row, column);
+      if (result === 'lost') statusElement.textContent = 'Mine! Start a new game to try again.';
+      else if (result === 'won') statusElement.textContent = 'You found every safe square. You win!';
+      else if (result === 'opened') statusElement.textContent = 'Square opened. What does its number tell you?';
+      drawBoard();
+    }
+
+    function flagSquare(row, column) {
+      if (game.toggleFlag(row, column)) {
+        statusElement.textContent = 'Flag placed or removed.';
+        drawBoard();
+      }
+    }
+
+    document.getElementById('reset').addEventListener('click', () => {
+      game.newGame();
+      statusElement.textContent = 'New board. Click a square to open it.';
+      drawBoard();
+    });
+    drawBoard();
+  </script>
+</body>
+</html>

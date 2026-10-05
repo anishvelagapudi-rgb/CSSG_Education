@@ -1,16 +1,14 @@
-# Minesweeper class implementation
+# Minesweeper implementation contract
 
-This is the implementation contract for the frontend-only class project.
-The class agrees on these rules before coding so everyone builds the same
-game and can compare their work with the teacher copy.
+This is the shared plan for the class game and the completed reference.
 
 ## Project boundary
 
-- Use plain HTML, CSS, and browser JavaScript.
-- No framework, build tool, account, or external service.
-- Student project files: `index.html`, `styles.css`, and `game.js`.
-- The game state exists only in the current browser page. Reloading starts
-  a new game; saving scores is outside this lesson.
+- One HTML file contains page markup, a `<style>` section, and a `<script>` section.
+- The `Minesweeper` class owns the board data and game rules. It does not read or change HTML elements.
+- Page code translates button clicks into class method calls, then renders the class state.
+- The game uses no external packages. The workshop repository has a small `http-server` development dependency for previewing pages.
+- Today the browser owns the game object. Later a server can own it and send the browser a safe view of the game.
 
 ## Agreed game rules
 
@@ -20,58 +18,45 @@ game and can compare their work with the teacher copy.
 | Mines | 10, placed randomly |
 | First move | Always safe; place mines after the first reveal |
 | Number | Count mines in all touching cells, including diagonals |
-| Empty cell | Reveal its connected empty area and the numbered edge around it |
+| Empty cell | Reveal its connected safe area and the numbered edge around it |
 | Flag | Right-click or Shift-click a covered cell; at most 10 flags |
 | Loss | Revealing a mine ends the round and shows the mines |
 | Win | Reveal all 71 non-mine cells |
-| Timer | Starts on the first reveal; stops when the round ends |
-| New game | Reset button creates a fresh board and resets the timer |
+| Timer | Page-only display starts at first reveal and stops when the round ends |
+| New game | Reset button asks the class to create a fresh board |
 
-The first click is safe, but it is not guaranteed to be an empty zero.
-This keeps the randomization rule simple enough to explain and implement.
+The first click is safe but is not guaranteed to be an empty zero.
 
-## Shared representation
+## The class at a glance
 
-The board is a two-dimensional array. Each cell is a small object:
+A cell object stores its row, column, mine, number, open, and flagged values. The board is a two-dimensional array of those cells.
 
 ```js
-{
-  r: 0, c: 0,
-  mine: false,
-  count: 0,
-  revealed: false,
-  flagged: false
+class Minesweeper {
+  newGame() { /* create a fresh board */ }
+  getNeighbors(cell) { /* return touching cells */ }
+  reveal(row, column) { /* apply reveal rules */ }
+  toggleFlag(row, column) { /* apply flag rules */ }
 }
+
+const game = new Minesweeper();
+const result = game.reveal(3, 4);
 ```
 
-`r` and `c` are zero-based row and column positions. The array is the game
-state. HTML buttons are the visible controls drawn from that state. A click
-changes the state, then the browser redraws the affected cells.
+A class is a recipe for an object. The `game` object stores one round. Its methods are the actions allowed by the game rules.
 
-Each visible square is a `<button class="cell">`. Its `data-row` and
-`data-column` attributes point back to the cell object. CSS classes describe
-its appearance: `revealed`, `flagged`, `mine`, or `n1` through `n8`.
+## Keep the browser boundary visible
 
-The teacher copy uses these function names to keep the walkthrough consistent:
-
-- `makeCell` and `createEmptyBoard` create the data.
-- `getNeighbors`, `placeMines`, and `countNearbyMines` prepare a round.
-- `drawBoard` and `drawCell` translate data into buttons.
-- `revealCell`, `revealEmptyArea`, and `toggleFlag` handle player actions.
-- `checkForWin`, `finishGame`, and `startNewGame` handle round state.
+The class contains no `document`, button, CSS class, or browser event code. Page code listens for an event, calls `game.reveal(...)` or `game.toggleFlag(...)`, and draws the updated board. This boundary makes the rules reusable in a server program later. A server version would also need to avoid sending hidden mine locations to the browser.
 
 ## Build order
 
-1. Agree on the rules above and sketch a sample board on paper.
-2. Make the HTML shell and the 9 × 9 CSS grid.
-3. Create cell data and a function that finds a cell's neighbors.
-4. Place mines after the first click and calculate each cell's count.
-5. Draw buttons from the cell data.
-6. Handle reveal clicks, loss, and empty-area expansion.
-7. Add flags, timer, win detection, and reset.
-8. Play several rounds and fix the cases that fail.
+1. Agree on the game rules and sketch a board.
+2. Put the HTML, CSS, and JavaScript in one `index.html` file.
+3. Create the `Minesweeper` class and its cell data.
+4. Find neighbors, place mines after the first click, and count clues.
+5. Ask the class to reveal cells; let the page draw the result.
+6. Add empty-area reveal, flags, win, loss, and reset.
+7. Playtest corners, edges, and full rounds.
 
-The teacher demo uses `minesweeper.html`, `minesweeper.css`, and
-`minesweeper.js`, and follows the same behavior contract. Students write
-their own version in class and use the teacher copy to compare behavior
-and implementation.
+The playable teacher demo is `minesweeper.html`. The student starter and completed reference are in `minesweeper-project/`; each is a single HTML file.
