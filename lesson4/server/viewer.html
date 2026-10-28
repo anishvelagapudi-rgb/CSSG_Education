@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Class Guestbook</title>
+  <style>
+    :root {
+      --bg:#f5f3ed; --panel:#fffefa; --line:#d7d3c8; --muted:#696d66; --text:#1e2723;
+      --accent:#52775f; --blue:#42647c; --gold:#8a6d1f; --red:#a74e48; --code-bg:#252b27; --code-text:#e9ede5;
+      --mono:"SFMono-Regular", Consolas, "Liberation Mono", ui-monospace, monospace;
+    }
+    * { box-sizing:border-box }
+    body { margin:0; background:var(--bg); color:var(--text); font:16px/1.5 Inter, system-ui, sans-serif }
+    header { padding:22px 28px; border-bottom:1px solid var(--line); background:var(--panel); display:flex; flex-wrap:wrap; gap:12px 28px; align-items:baseline }
+    h1 { font-size:24px; margin:0 }
+    .url { font:600 18px var(--mono); color:var(--blue) }
+    .hint { font:12px var(--mono); color:var(--muted) }
+    main { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:24px; padding:24px 28px }
+    h2 { font:600 11px var(--mono); letter-spacing:.1em; color:var(--muted); margin:0 0 10px }
+    .entry { background:var(--panel); border:1px solid var(--line); padding:12px 16px; margin-bottom:10px; animation:pop .5s ease }
+    .entry .who { display:flex; gap:10px; align-items:baseline; font-size:14px }
+    .entry b { font-size:16px }
+    .entry .meta { color:var(--muted); font:12px var(--mono) }
+    .entry p { margin:4px 0 0; overflow-wrap:anywhere }
+    .likes { margin-left:auto; font:12px var(--mono); color:var(--accent) }
+    .feed { background:var(--code-bg); color:var(--code-text); font:13px/1.8 var(--mono); padding:12px 14px; min-height:200px; max-height:75vh; overflow:auto }
+    .feed div { display:grid; grid-template-columns:68px 64px 1fr 40px; gap:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+    .feed .t { color:#9aa597 }
+    .m-GET,.m-HEAD { color:#9fd49a } .m-POST { color:#a9cdea } .m-PUT,.m-PATCH { color:#f0d58b } .m-DELETE { color:#f4a39a }
+    .s2 { color:#9fd49a } .s4 { color:#f4a39a } .s5 { color:#e3a3f0 }
+    .empty { color:var(--muted); font-style:italic }
+    .down { color:var(--red); font:13px var(--mono) }
+    @keyframes pop { from { background:#e7ece5 } }
+    @media (prefers-reduced-motion: reduce) { .entry { animation:none } }
+    @media (max-width:800px) { main { grid-template-columns:1fr; padding:16px } header { padding:16px } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Class guestbook</h1>
+    <span class="url" id="url"></span>
+    <span class="hint">curl <span id="url2"></span>/entries · GET / for every endpoint</span>
+    <span class="down" id="status"></span>
+  </header>
+  <main>
+    <section><h2 id="count">ENTRIES</h2><div id="entries"></div></section>
+    <section><h2>EVERY REQUEST, AS IT ARRIVES</h2><div class="feed" id="feed"></div></section>
+  </main>
+  <script>
+    document.getElementById('url').textContent = location.origin;
+    document.getElementById('url2').textContent = location.origin;
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+    const ago = iso => {
+      const s = Math.max(0, (Date.now() - new Date(iso)) / 1000);
+      return s < 60 ? 'just now' : s < 3600 ? Math.floor(s / 60) + 'm ago' : Math.floor(s / 3600) + 'h ago';
+    };
+    let seen = new Set();
+    const VIEWER = { 'X-Viewer': '1' }; // keeps this page's own polling out of the request log
+
+    // This page is a fetch example too: two independent GETs, so they run in parallel.
+    async function refresh() {
+      try {
+        const [entries, log] = await Promise.all([
+          fetch('/entries?limit=50', { headers: VIEWER }).then(r => r.json()),
+          fetch('/log', { headers: VIEWER }).then(r => r.json())
+        ]);
+        document.getElementById('status').textContent = '';
+        document.getElementById('count').textContent = 'ENTRIES · NEWEST FIRST · ' + entries.length;
+        const fresh = new Set(entries.map(e => e.id));
+        document.getElementById('entries').innerHTML = entries.length ? entries.map(e =>
+          '<div class="entry"' + (seen.has(e.id) ? ' style="animation:none"' : '') + '><div class="who"><b>' + esc(e.name) + '</b>' +
+          '<span class="meta">#' + e.id + ' · ' + ago(e.createdAt) + '</span><span class="likes">♥ ' + e.likes + '</span></div>' +
+          '<p>' + esc(e.message) + '</p></div>').join('') : '<p class="empty">No entries. POST one!</p>';
+        seen = fresh;
+        document.getElementById('feed').innerHTML = log.length ? log.map(l =>
+          '<div><span class="t">' + new Date(l.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }) + '</span>' +
+          '<span class="m-' + esc(l.method) + '">' + esc(l.method) + '</span><span>' + esc(l.path) + '</span>' +
+          '<span class="s' + String(l.status)[0] + '">' + l.status + '</span></div>').join('') : '<p class="empty">Waiting for requests…</p>';
+      } catch (err) {
+        document.getElementById('status').textContent = 'server unreachable: ' + err.message;
+      } finally {
+        setTimeout(refresh, 1500);
+      }
+    }
+    refresh();
+  </script>
+</body>
+</html>

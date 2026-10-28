@@ -1,15 +1,30 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <title>CSSG Education</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CSSG Education</title>
+  <style>
+    body { margin:0; background:#f5f3ed; color:#1e2723; font:17px/1.5 system-ui, sans-serif }
+    main { max-width:560px; margin:0 auto; padding:64px 20px }
+    h1 { font-size:28px; margin:0 0 32px }
+    ol { list-style:none; margin:0; padding:0; border-top:1px solid #d7d3c8 }
+    li { display:flex; gap:16px; align-items:baseline; padding:14px 0; border-bottom:1px solid #d7d3c8 }
+    .n { font:13px ui-monospace, monospace; color:#696d66; width:24px }
+    a { color:#2f4d36; font-weight:600; text-decoration:none }
+    a:hover { text-decoration:underline }
+    small { margin-left:8px; color:#696d66 }
+  </style>
 </head>
 <body>
+  <main>
     <h1>CSSG Education</h1>
-
-    <h2>Lessons</h2>
-    <a href="lesson1/">Lesson 1</a>
-    <a href="lesson2/">Lesson 2 - HTML &amp; CSS</a>
-    <a href="lesson3/">Lesson 3 - JavaScript &amp; React</a>
-    <a href="lesson4/">Lesson 4 - Async, APIs &amp; fetch</a>
+    <ol>
+      <li><span class="n">01</span><a href="lesson1/">Build Minesweeper</a></li>
+      <li><span class="n">02</span><a href="lesson2/">HTML &amp; CSS</a></li>
+      <li><span class="n">03</span><a href="lesson3/">React + TypeScript</a></li>
+      <li><span class="n">04</span><span><a href="lesson4/">Async, HTTP &amp; fetch</a><small>(<a href="lesson4-short/">40-min version</a>)</small></span></li>
+    </ol>
+  </main>
 </body>
 </html>

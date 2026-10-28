@@ -111,7 +111,7 @@
     if (u.hostname === 'pokeapi.co') {
       const m = path.match(/^\/api\/v2\/pokemon\/([^/]+)$/);
       const p = m && (POKEMON[m[1].toLowerCase()] || Object.entries(POKEMON).map(([name, v]) => Object.assign({ name }, v)).find(v => String(v.id) === m[1]));
-      if (!p) return new Response('Not Found', { status: 404, statusText: 'Not Found' });
+      if (!p) return json({ status: 404, message: 'Not Found' }, 404);
       const name = p.name || m[1].toLowerCase();
       return json({ id: p.id, name, height: p.height, weight: p.weight,
         types: p.types.map((t, i) => ({ slot: i + 1, type: { name: t } })),
@@ -141,16 +141,36 @@
       if ((m = path.match(/^\/todos\/(\d+)$/))) return json({ userId: 1, id: Number(m[1]), title: 'delectus aut autem', completed: false });
       return json({}, 404);
     }
+    if (isClassServer(u) && window.Guestbook) return guestbook(u, method, init);
     return null;
+  }
+
+  // The class guestbook server (server/server.js) normally runs on a laptop in the room.
+  // Offline, the same rules (server/guestbook.js) answer here, in the browser.
+  const isClassServer = u => /^(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|[\w-]+\.local)$/.test(u.hostname);
+  let book = null;
+  function guestbook(u, method, init) {
+    book = book || window.Guestbook.create();
+    const headers = {};
+    new Headers(init.headers || {}).forEach((v, k) => { headers[k] = v; });
+    const out = book.handle({ method, path: u.pathname, search: u.search, query: Object.fromEntries(u.searchParams),
+      headers, body: typeof init.body === 'string' ? init.body : '', client: 'you' });
+    const resHeaders = Object.assign({}, out.headers);
+    if (out.body !== null) resHeaders['Content-Type'] = 'application/json';
+    const res = new Response(out.body === null || method === 'HEAD' ? null : JSON.stringify(out.body, null, 2),
+      { status: out.status, statusText: out.statusText, headers: resHeaders });
+    res.extraDelay = out.delay || 0;
+    return res;
   }
 
   // Offline: wait like a real network would, then answer from the table above.
   // Unknown hosts fail the way a dead network does: fetch rejects with a TypeError.
+  // Requests are answered when sent (the server sees them right away), and arrive after the delay.
   function mockFetch(url, init = {}) {
     return new Promise((resolve, reject) => {
-      const delay = 150 + Math.random() * 450;
+      const res = route(String(url), init);
+      const delay = 150 + Math.random() * 450 + (res && res.extraDelay || 0);
       const timer = setTimeout(() => {
-        const res = route(String(url), init);
         if (!res) reject(new TypeError('Failed to fetch'));
         else {
           Object.defineProperty(res, 'url', { value: new URL(String(url), location.href).href });

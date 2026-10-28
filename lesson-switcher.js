@@ -5,11 +5,14 @@
     { n: 1, title: 'Build Minesweeper' },
     { n: 2, title: 'HTML & CSS' },
     { n: 3, title: 'React + TypeScript' },
-    { n: 4, title: 'Async, APIs & fetch' }
+    { n: 4, title: 'Async, HTTP & fetch' },
+    { n: 4, dir: 'lesson4-short', tag: '4·40', title: 'Async & fetch · 40 min' }
   ];
+  LESSONS.forEach(function (l) { l.dir = l.dir || 'lesson' + l.n; l.tag = l.tag || String(l.n); });
 
-  var match = location.pathname.match(/lesson(\d+)\//);
-  var current = match ? Number(match[1]) : null;
+  var match = location.pathname.match(/\/(lesson[\w-]+)\//);
+  var current = null;
+  LESSONS.forEach(function (l) { if (match && l.dir === match[1]) current = l; });
 
   var css =
     '.topbar-left{display:flex;align-items:center;gap:16px;min-width:0}' +
@@ -23,7 +26,7 @@
     '.lesson-switch-menu a{display:flex;gap:10px;align-items:baseline;padding:8px 10px;border-radius:2px;color:var(--text,#1e2723);text-decoration:none;font:500 14px var(--sans,sans-serif)}' +
     '.lesson-switch-menu a:hover,.lesson-switch-menu a:focus{background:rgba(127,127,127,.12);outline:none}' +
     '.lesson-switch-menu a[aria-current] {font-weight:700}' +
-    '.lesson-switch-menu .num{font:500 10px var(--mono,monospace);letter-spacing:.08em;opacity:.65;min-width:22px}' +
+    '.lesson-switch-menu .num{font:500 10px var(--mono,monospace);letter-spacing:.08em;opacity:.65;min-width:30px}' +
     '@media(max-width:580px){.lesson-switch-btn .label{display:none}.brand small{display:none}}';
 
   function build() {
@@ -38,12 +41,12 @@
     wrap.className = 'lesson-switch';
     wrap.innerHTML =
       '<button type="button" class="lesson-switch-btn" aria-haspopup="true" aria-expanded="false">' +
-      '<span class="label">' + (current ? 'LESSON ' + current : 'LESSONS') + '</span>' +
+      '<span class="label">' + (current ? 'LESSON ' + current.tag : 'LESSONS') + '</span>' +
       '<span class="caret">▼</span></button>' +
       '<ul class="lesson-switch-menu" hidden>' +
       LESSONS.map(function (l) {
-        return '<li><a href="../lesson' + l.n + '/"' + (l.n === current ? ' aria-current="page"' : '') + '>' +
-          '<span class="num">L' + l.n + '</span><span>' + l.title.replace(/&/g, '&amp;') + '</span></a></li>';
+        return '<li><a href="../' + l.dir + '/"' + (l === current ? ' aria-current="page"' : '') + '>' +
+          '<span class="num">L' + l.tag + '</span><span>' + l.title.replace(/&/g, '&amp;') + '</span></a></li>';
       }).join('') +
       '<li><a href="../index.html"><span class="num">↩</span><span>All lessons</span></a></li>' +
       '</ul>';

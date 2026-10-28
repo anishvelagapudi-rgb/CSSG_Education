@@ -210,7 +210,7 @@
       '<div class="freeze-buttons">' +
       '<button type="button" class="bad" data-block><b>while (…) { } for 3 s</b>Do the waiting <i>on the main thread</i>: a loop that checks the clock until 3 s pass.</button>' +
       '<button type="button" class="good" data-wait><b>setTimeout(…, 3000)</b>Ask the browser to call us back in 3 s. The main thread is free meanwhile.</button>' +
-      '<button type="button" class="good" data-await><b>await wait(3000)</b>Same as setTimeout, written with a promise. (Section 04.)</button></div>';
+      '<button type="button" class="good" data-await><b>await wait(3000)</b>Same as setTimeout, written with a promise. (Section 02.)</button></div>';
     const ball = box.querySelector('.freeze-ball');
     const clock = box.querySelector('.freeze-clock');
     const status = box.querySelector('.freeze-status');
@@ -526,7 +526,7 @@
   });
 
   /* ---------- Assignment checklist (remembered in this browser only) ---------- */
-  const KEY = 'cssg-lesson4-checklist';
+  const KEY = 'cssg-lesson4-v2-checklist'; // v2: the tasks changed when the deck was rebuilt
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY)) || {}; } catch { saved = {}; }
   const boxes = [...document.querySelectorAll('#assignmentMode input[type="checkbox"]')];

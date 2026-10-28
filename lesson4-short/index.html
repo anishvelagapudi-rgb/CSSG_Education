@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f3ed">
+  <title>CS + SG · Async, APIs &amp; fetch (40 min)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html" aria-label="All lessons"><span class="brand-mark">&lt;/&gt;</span><span>CS + SG <small>LESSON 4 · ASYNC &amp; FETCH · 40 MIN</small></span></a>
+    <nav class="mode-tabs" aria-label="Lesson mode">
+      <button class="mode-tab active" data-mode="slides">Slides</button>
+      <button class="mode-tab" data-mode="playground">Playground</button>
+      <button class="mode-tab" data-mode="assignment">Assignment</button>
+    </nav>
+    <div class="top-meta"><span id="totalTime"></span><button id="speakerBtn" class="arrow-button" style="height:26px;font:10px var(--mono);letter-spacing:.06em" title="Open the notes in a second window (S)">SPEAKER VIEW · S</button></div>
+  </header>
+  <div class="progress-track"><div id="progress"></div></div>
+
+  <div class="layout" id="slidesMode">
+    <aside class="sidebar">
+      <div class="side-heading">TODAY <span id="routeCount"></span></div>
+      <nav id="sectionNav" aria-label="Lesson slides"></nav>
+      <div class="sidebar-note"><b>Teacher copy · 40 minutes</b>
+        <p>The bite-sized cut of lesson 4. Aim for the <b>engine</b> by ~15 min, <b>promises &amp; await</b> by ~29, <b>the network</b> by ~38, then the exit ticket.</p>
+        <p>Orange numbers are <b>PREDICT</b> slides: freeze, let pairs argue, vote, step through. Blue <b>TALK</b> boxes are open questions: take two or three answers and move on.</p>
+        <p><b>→</b> steps a trace before moving on. <b>S</b> opens the speaker view. Slides marked <b>·opt</b> are bonus.</p>
+        <p>Full 3-hour version: <a href="../lesson4/">lesson 4</a>.</p></div>
+    </aside>
+    <main id="main" tabindex="-1">
+      <div class="slide-top"><span id="sectionLabel" class="eyebrow"></span><span id="sectionTime" class="time-pill"></span></div>
+      <article id="slide"></article>
+      <footer class="slide-footer"><span id="slideIndex"></span><div class="footer-controls"><button id="prev" class="arrow-button" aria-label="Previous slide">←</button><button id="present" class="arrow-button" aria-label="Toggle full screen presentation">⛶ <span>Present</span></button><button id="next" class="next-button">Next <span>→</span></button></div></footer>
+    </main>
+  </div>
+
+  <main class="pg-page" id="playgroundMode" hidden>
+    <div class="pg-page-head">
+      <div><div class="eyebrow">PLAIN JAVASCRIPT · EVERY LOG IS STAMPED WITH ITS TIME</div><h1>Async playground</h1></div>
+      <label>Start from:
+        <select id="pgSample">
+          <option value="order">Event loop order puzzle</option>
+          <option value="fetch">Fetch a Pokémon</option>
+          <option value="parallel">Sequential vs parallel</option>
+          <option value="errors">Error handling</option>
+          <option value="blank">Blank</option>
+        </select>
+      </label>
+    </div>
+    <div id="pgHolder"></div>
+    <p class="progress-note">Top-level <code>await</code> works here. <b>network: offline copy</b> answers PokeAPI and JSONPlaceholder requests from a built-in copy, so it works without Wi-Fi.</p>
+  </main>
+
+  <main class="assignment-page" id="assignmentMode" hidden>
+    <div class="eyebrow">HOMEWORK · ON YOUR OWN OR IN PAIRS</div>
+    <h1>Build a page that <span class="accent">talks to a server</span>.</h1>
+    <p class="lead">Pick a free public API and build a small page around it: the user asks for something, you fetch it, and the page handles the three states properly. Check a box when it works in your browser, including with the network throttled.</p>
+    <p>No-key APIs that allow browser requests: <a href="https://pokeapi.co" target="_blank" rel="noreferrer">PokeAPI</a> · <a href="https://jsonplaceholder.typicode.com" target="_blank" rel="noreferrer">JSONPlaceholder</a> · <a href="https://open-meteo.com" target="_blank" rel="noreferrer">Open-Meteo (weather)</a> · <a href="https://restcountries.com" target="_blank" rel="noreferrer">REST Countries</a> · <a href="https://dog.ceo/dog-api/" target="_blank" rel="noreferrer">Dog CEO</a></p>
+    <div class="task-grid">
+      <section class="task"><div class="task-number">01</div><div><span class="tag">PLAN · SYSTEMS</span><h2>Read the API first</h2>
+        <label><input type="checkbox"> I opened one endpoint's URL in my browser and read the JSON it returns</label>
+        <label><input type="checkbox"> I wrote down the 1–2 endpoints I need, with their method and URL</label>
+        <label><input type="checkbox"> I know what the API returns for a thing that doesn't exist (status code and body)</label>
+      </div></section>
+      <section class="task"><div class="task-number">02</div><div><span class="tag">FETCH</span><h2>async / await, done properly</h2>
+        <label><input type="checkbox"> A <code>getJSON(url)</code> helper that checks <code>res.ok</code> and throws otherwise</label>
+        <label><input type="checkbox"> Calls use <code>try</code> / <code>catch</code> / <code>finally</code></label>
+        <label><input type="checkbox"> No <code>.then</code> chain longer than one link (use <code>await</code>)</label>
+      </div></section>
+      <section class="task"><div class="task-number">03</div><div><span class="tag">UI STATES</span><h2>Loading, error, success</h2>
+        <label><input type="checkbox"> A loading message or spinner while waiting</label>
+        <label><input type="checkbox"> A friendly error message and a <b>Try again</b> button</label>
+        <label><input type="checkbox"> I tested it with DevTools → Network → <i>Slow 4G</i> and with <i>Offline</i></label>
+      </div></section>
+      <section class="task"><div class="task-number">04</div><div><span class="tag">INPUT</span><h2>The user drives it</h2>
+        <label><input type="checkbox"> A form (search box, dropdown, or buttons) picks what to fetch</label>
+        <label><input type="checkbox"> A “not found” (404) shows a helpful message, not a crash</label>
+        <label><input type="checkbox"> Searching twice quickly never shows the older answer (race condition handled)</label>
+      </div></section>
+      <section class="task"><div class="task-number">05</div><div><span class="tag">PARALLEL</span><h2>More than one request</h2>
+        <label><input type="checkbox"> The page needs at least 2 independent requests (e.g. compare two Pokémon, or 3 random dogs)</label>
+        <label><input type="checkbox"> They run together with <code>Promise.all</code>, not one after another</label>
+        <label><input type="checkbox"> I can explain, in one sentence, why that's faster</label>
+      </div></section>
+      <section class="task"><div class="task-number">06</div><div><span class="tag">SHIP IT</span><h2>Commit and deploy</h2>
+        <label><input type="checkbox"> Pushed to GitHub</label>
+        <label><input type="checkbox"> Deployed (GitHub Pages, Netlify, or Vercel) and it works on my phone</label>
+      </div></section>
+      <section class="task wide"><div class="task-number">★</div><div><span class="tag">STRETCH · IF YOU FINISH EARLY</span><h2>Go further</h2>
+        <label><input type="checkbox"> Port it into your Mini Instagram from lesson 3 with <code>useEffect</code>, including the cleanup function</label>
+        <label><input type="checkbox"> Add a timeout with <code>AbortSignal.timeout(5000)</code> and show “That took too long”</label>
+        <label><input type="checkbox"> Cache results in a <code>Map</code> so searching the same thing twice doesn't hit the network</label>
+      </div></section>
+    </div>
+
+    <h2 style="margin-top:40px;font:650 24px var(--sans)">Event loop puzzles</h2>
+    <p>Write your answer on paper and explain <b>why</b>, using the words <i>call stack</i>, <i>microtask</i>, and <i>task</i>. Then reveal, or paste the code into the Playground.</p>
+    <div class="grid2">
+      <div>
+        <script type="text/plain" data-label="PUZZLE 1">
+          setTimeout(() => console.log("A"), 10);
+          setTimeout(() => console.log("B"), 0);
+          Promise.resolve().then(() => console.log("C"));
+          console.log("D");
+        </script>
+        <button class="reveal-btn" data-reveal>Reveal</button>
+        <div class="answer"><b>D C B A.</b> D is synchronous. C is a microtask, so it runs before any task. B's timer (0 ms) finishes before A's (10 ms), so B joins the task queue first.</div>
+      </div>
+      <div>
+        <script type="text/plain" data-label="PUZZLE 2">
+          async function f() {
+            console.log("1");
+            await g();
+            console.log("2");
+          }
+          async function g() {
+            console.log("3");
+          }
+          f();
+          console.log("4");
+        </script>
+        <button class="reveal-btn" data-reveal>Reveal</button>
+        <div class="answer"><b>1 3 4 2.</b> <code>f</code> runs synchronously and calls <code>g</code>, which also runs synchronously (3). The <code>await</code> pauses <code>f</code>, so 4 prints, and then <code>f</code> resumes as a microtask (2).</div>
+      </div>
+      <div>
+        <script type="text/plain" data-label="PUZZLE 3">
+          const p = new Promise((resolve) => {
+            console.log("a");
+            setTimeout(() => {
+              console.log("b");
+              resolve();
+            }, 0);
+          });
+          p.then(() => console.log("c"));
+          console.log("d");
+        </script>
+        <button class="reveal-btn" data-reveal>Reveal</button>
+        <div class="answer"><b>a d b c.</b> The executor runs right away (a). The promise stays pending until the timer task runs (b) and calls <code>resolve</code>. Only then is <code>c</code> queued as a microtask.</div>
+      </div>
+      <div>
+        <script type="text/plain" data-label="PUZZLE 4">
+          const user = { name: "Ada" };
+          setTimeout(() => console.log(user.name), 0);
+          user.name = "Grace";
+        </script>
+        <button class="reveal-btn" data-reveal>Reveal</button>
+        <div class="answer"><b>Grace.</b> The callback holds a reference to the same object on the heap and reads <code>name</code> when it runs, which is after line 3.</div>
+      </div>
+    </div>
+    <p class="progress-note"><span id="checkCount"></span> · saved in this browser only</p>
+  </main>
+</div>
+
+<div id="pgSamples" hidden>
+<script type="text/plain" data-name="order">
+  // Predict the order, then press ▶ run.
+  console.log("1");
+  setTimeout(() => console.log("2 · timer"), 0);
+  Promise.resolve().then(() => console.log("3 · promise"));
+  queueMicrotask(() => console.log("4 · microtask"));
+  (async () => {
+    console.log("5 · async start");
+    await null;
+    console.log("6 · after await");
+  })();
+  console.log("7");
+</script>
+<script type="text/plain" data-name="fetch">
+  const name = "eevee";
+  const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+  console.log(res.status, res.ok);
+  if (!res.ok) throw new Error(`No Pokémon called ${name}`);
+  const data = await res.json();
+  console.log(data.name, "#" + data.id, data.types.map((t) => t.type.name));
+</script>
+<script type="text/plain" data-name="parallel">
+  const wait = (ms, value) => new Promise((resolve) => setTimeout(() => resolve(value), ms));
+
+  console.log("sequential…");
+  await wait(500); await wait(500); await wait(500);
+  console.log("sequential done");
+
+  console.log("parallel…");
+  await Promise.all([wait(500), wait(500), wait(500)]);
+  console.log("parallel done");
+</script>
+<script type="text/plain" data-name="errors">
+  async function getJSON(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+    return res.json();
+  }
+
+  try {
+    const user = await getJSON("https://jsonplaceholder.typicode.com/users/1");
+    console.log("got", user.name);
+    await getJSON("https://jsonplaceholder.typicode.com/users/999");
+  } catch (err) {
+    console.log("caught:", err.message);
+  } finally {
+    console.log("finally runs either way");
+  }
+</script>
+<script type="text/plain" data-name="blank">
+  console.log("hello");
+</script>
+</div>
+
+<div id="slideTemplates" hidden>
+
+<!-- ================= INTRO ================= -->
+
+<template data-part="Intro" data-title="Async, APIs & fetch · 40 minutes" data-time="1 MIN" data-label="INTRO · LESSON 4 · 40 MIN">
+  <div class="title-slide">
+    <div>
+      <div class="eyebrow">ASYNC, APIS &amp; FETCH · LESSON 4 · THE 40-MINUTE CUT</div>
+      <h1>Waiting, <span class="accent">without freezing</span>.</h1>
+      <p class="lead">How a language with one thread talks to servers across the planet without locking up your page. Three stops: <b>the engine</b>, <b>promises &amp; await</b>, <b>the network</b>.</p>
+      <div class="flow" style="margin-top:0">
+        <div><b>Predict</b><small>Commit to an answer.</small></div><i>→</i>
+        <div><b>Pair</b><small>Tell a neighbor why.</small></div><i>→</i>
+        <div><b>Vote</b><small>Hands up.</small></div><i>→</i>
+        <div><b>Step through</b><small>Watch the engine.</small></div>
+      </div>
+    </div>
+    <div class="title-art">console.log("1");
+setTimeout(() =&gt; console.log("2"), 0);
+Promise.resolve()
+  .then(() =&gt; console.log("3"));
+console.log("4");
+
+// what prints? in 15 minutes
+// you'll know why.</div>
+  </div>
+  <details class="speaker-notes"><summary>Teacher notes · hook + the routine</summary>
+    <p><span class="n say">SAY</span> “Less typing, more thinking today. I'll show code, you predict what it does, tell your neighbor why, then we vote and step through it. Being wrong is the point.”</p>
+    <p><span class="n ask">ASK</span> Point at the code: “Gut check: what order?” Write 3–4 answers on the board. <b>Don't reveal.</b> It comes back in “Promise vs setTimeout”.</p>
+    <p><span class="n ans">ANSWER</span> (for you) <code>1 4 3 2</code>.</p>
+    <p><span class="n do">PACING</span> Engine by ~15 min, promises &amp; await by ~29, network by ~38, exit ticket to close. Slides marked ·opt are bonus if the room is fast.</p>
+  </details>
+</template>
+
+<!-- ================= 01 · THE ENGINE (≈15 MIN) ================= -->
+
+<template data-part="01 · The engine" data-title="How slow is the network?" data-time="2 MIN" data-label="ENGINE 01 · LATENCY">
+  <div data-predict="30">If 1 nanosecond were 1 second, how long would each of these take? Guess, then click a row.</div>
+  <h2>The network is <span class="accent">unimaginably</span> slow.</h2>
+  <table class="latency">
+    <tr><th>OPERATION</th><th>REAL TIME</th><th>IF 1 NS = 1 SECOND</th></tr>
+    <tr><td>Read a variable (CPU cache)</td><td>~1 ns</td><td class="human"><span>1 second</span></td></tr>
+    <tr><td>Read from RAM (main memory)</td><td>~100 ns</td><td class="human"><span>~2 minutes</span></td></tr>
+    <tr><td>Read from an SSD</td><td>~100 µs</td><td class="human"><span>~1 day</span></td></tr>
+    <tr><td>Round trip inside one data center</td><td>~0.5 ms</td><td class="human"><span>~6 days</span></td></tr>
+    <tr class="far"><td>Round trip, US coast to coast</td><td>~70 ms</td><td class="human"><span>~2 years</span></td></tr>
+    <tr class="far"><td>Round trip, US ↔ Europe</td><td>~150 ms</td><td class="human"><span>~5 years</span></td></tr>
+  </table>
+  <div class="one-line">Your screen redraws every <b>16 ms</b> (60 times a second). One trip across the country takes about <b>4 frames</b>. If JavaScript sat and waited, the page would be frozen for all of them.</div>
+  <details class="speaker-notes"><summary>Teacher notes · make it visceral</summary>
+    <p><span class="n ask">ASK</span> Before clicking each row: “Shout a guess.” People usually guess RAM is a few seconds and the network is a few hours.</p>
+    <p><span class="n ans">ANSWER</span> Reveal top to bottom. Pause on the last two: “Asking a server in Europe for data is like ordering a pizza and waiting <b>five years</b>. You would not stand at the door.”</p>
+    <p><span class="n say">SAY</span> “And light can't go faster. The only way to speed this up is to not wait: <b>do other things while you wait</b>. That's all ‘async’ means.”</p>
+    <p><span class="n stuck">IF ASKED</span> “Where do these numbers come from?” The well-known “latency numbers every programmer should know” (Jeff Dean, Peter Norvig). They're rough orders of magnitude, not exact. Speed of light in fiber is about 200,000 km/s, so ~4,000 km each way is ~40 ms before any routing.</p>
+  </details>
+</template>
+
+<template data-part="01 · The engine" data-title="One thread. Don't block it." data-time="3 MIN" data-label="ENGINE 02 · LIVE DEMO">
+  <div class="eyebrow"><span class="badge demo">LIVE</span>CLICK A BUTTON ON THE RIGHT, THEN TRY TO TYPE AND CLICK ON THE LEFT</div>
+  <h2>Your JS gets <span class="accent">one</span> thread. Don't block it.</h2>
+  <div data-freeze></div>
+  <div class="bite">
+    <div><b>ONE COOK</b>The same thread runs your code, draws the page, and handles every click.</div>
+    <div><b>BLOCKING</b>Stand and stare at the oven. Nothing else happens until it's done.</div>
+    <div><b>NON-BLOCKING</b>Set a timer, go make salad. The <b>browser</b> does the waiting and dings you.</div>
+  </div>
+  <div class="discuss">The page froze, but your clicks still showed up afterward. <b>Where were they waiting?</b></div>
+  <details class="speaker-notes"><summary>Teacher notes · run it in this order</summary>
+    <p><span class="n do">DO</span> Point at the ball and clock (“JS moves these 60× a second”). Click the <b>red</b> button, then try typing and clicking. Everything freezes; when it unfreezes, the letters and clicks land all at once. Then click a <b>green</b> button: the ball keeps moving.</p>
+    <p><span class="n ask">ASK</span> The talk prompt. Take a couple of guesses. “In a <b>queue</b>. That's the next slide but one.”</p>
+    <p><span class="n stuck">IF ASKED</span> “Can JS use more threads?” Web Workers, but they can't touch the page. Not today.</p>
+  </details>
+</template>
+
+<template data-part="01 · The engine" data-title="Stack & heap in two minutes" data-time="2 MIN" data-label="ENGINE 03 · MEMORY">
+  <div class="eyebrow">WHERE DO VARIABLES ACTUALLY LIVE?</div>
+  <h2>The <span class="accent">stack</span> forgets. The <span class="accent">heap</span> remembers.</h2>
+  <div class="bite" style="margin:0 0 14px">
+    <div><b>CALL STACK · A PILE OF PLATES</b>Every call adds a <b>frame</b> with its local variables. Return, and the frame is thrown away.</div>
+    <div><b>HEAP · A WAREHOUSE</b>Objects, arrays, functions. They stay as long as <b>something can still reach them</b>.</div>
+  </div>
+  <script type="text/plain" data-run data-mark="2-3">
+    function makeCounter() {
+      let count = 0;
+      return () => ++count;
+    }
+    const next = makeCounter(); // makeCounter's frame is gone now
+    console.log(next());
+    console.log(next());
+  </script>
+  <div class="one-line">A <b>closure</b> is a function plus the variables it was born with, kept alive on the heap. Every callback today is one: it runs <b>later</b>, after the function that made it has returned.</div>
+  <div class="discuss"><code>makeCounter</code> has returned and its frame is gone. <b>So where does <code>count</code> live?</b></div>
+  <details class="speaker-notes"><summary>Teacher notes · the one memory idea async needs</summary>
+    <p><span class="n do">DO</span> Draw a tall STACK box and a wide HEAP cloud on the board. Keep it up for the rest of the lesson.</p>
+    <p><span class="n ask">ASK</span> The talk prompt, then run it. <span class="n ans">ANSWER</span> <code>1</code>, <code>2</code>. <code>count</code> lives in a scope object on the heap, kept alive because <code>next</code> points to it.</p>
+    <p><span class="n say">SAY</span> “When a fetch finishes 2 seconds from now and your callback uses a variable from the function that started it, this is why that variable still exists.”</p>
+  </details>
+</template>
+
+<template data-part="01 · The engine" data-title="The whole machine" data-time="3 MIN" data-label="ENGINE 04 · THE MAP">
+  <div class="eyebrow">EVERYTHING THAT DECIDES WHAT RUNS NEXT</div>
+  <h2>Stack, heap, browser, <span class="accent">two queues</span>, one loop.</h2>
+  <div class="runtime">
+    <div class="rt-stack"><b>Call stack</b><small>What's running right now. One frame on top at a time. JavaScript runs each piece of work <b>to completion</b>: nothing can interrupt it.</small></div>
+    <div class="rt-heap"><b>Heap</b><small>Objects, closures, promises, and paused async functions. They stay while reachable.</small></div>
+    <div class="rt-apis"><b>Web APIs (the browser)</b><small>Timers, network, clicks. Not JavaScript: browser code, on other threads. It does the waiting.</small></div>
+    <div class="rt-tasks"><b>Task queue</b><small>“Wake me when this is done” callbacks: timers, clicks and other events, network events. One at a time.</small></div>
+    <div class="rt-micro"><b>Microtask queue</b><small>Promise reactions (<code>.then</code>, the code after <code>await</code>). High priority: <b>all</b> of them run before the next task.</small></div>
+    <div class="rt-loop"><b>Event loop</b><small>The cook's routine. Picks what goes on the empty stack next.</small></div>
+  </div>
+  <script type="text/plain" data-label="THE EVENT LOOP, IN PSEUDOCODE" data-big>
+    while (true) {
+      const task = taskQueue.takeOldest();  // a script, a timer, a click…
+      run(task);                            // until the call stack is empty
+      while (microtaskQueue.length > 0) {   // then ALL microtasks,
+        run(microtaskQueue.takeOldest());   // including new ones they add
+      }
+      maybeRedrawThePage();                 // about every 16 ms
+    }
+  </script>
+  <div class="discuss">Remember the frozen clicks? <b>Which box were they sitting in</b>, and why couldn't the loop take them?</div>
+  <details class="speaker-notes"><summary>Teacher notes · the core slide of the lecture</summary>
+    <p><span class="n do">DO</span> Add to your board drawing: a “BROWSER” box to the right, and two queues underneath (label one “tasks”, one “microtasks”). Draw the loop as an arrow going around.</p>
+    <p><span class="n say">SAY</span> “Three rules. Write them down. <b>(1)</b> Code runs to completion: nothing interrupts a function halfway. <b>(2)</b> After each task, run every microtask. <b>(3)</b> Only then take the next task, or redraw.”</p>
+    <p><span class="n ask">ASK</span> Callback to the freeze demo: “Where were my clicks while the page was frozen?” (In the task queue. The stack was never empty, so the loop couldn't take them.)</p>
+    <p><span class="n stuck">IF ASKED</span> “Is a ‘task’ the same as a ‘macrotask’?” Yes, people use both words. The HTML spec says “task”. “Where's rendering?” Between tasks, when the browser decides it's time (about every 16 ms). That's why a long task freezes the screen.</p>
+  </details>
+</template>
+
+<template data-part="01 · The engine" data-title="setTimeout(…, 0)" data-time="2 MIN" data-label="ENGINE 05 · TRACE">
+  <div data-predict="30">The timer is 0 milliseconds. What order do A, B, C print in?</div>
+  <div data-trace="timeout0"></div>
+  <details class="speaker-notes"><summary>Teacher notes · the first real predict</summary>
+    <p><span class="n ans">ANSWER</span> <code>A C B</code>.</p>
+    <p><span class="n wrong">COMMON WRONG ANSWER</span> <code>A B C</code>: “0 ms means now.” Ask: “When the timer goes ding, is the stack empty?” No, the script is still running, and rule 1 says nothing interrupts it. B has to wait in the queue.</p>
+    <p><span class="n say">SAY</span> “<code>setTimeout(fn, 0)</code> doesn't mean ‘in 0 ms’. It means ‘put this in line, at the back, as soon as possible’. The delay is a <b>minimum</b>, never a promise.”</p>
+    <p><span class="n stuck">IF STUCK ON THE STEPS</span> Use the cook: “The cook hands the timer to the kitchen timer and keeps cooking (C). The ding goes off, but the cook finishes the current dish before looking at the timer.”</p>
+  </details>
+</template>
+
+<template data-part="01 · The engine" data-title="The var-in-a-loop puzzle" data-time="3 MIN" data-label="ENGINE 06 · TRACE">
+  <div data-predict="60">Three timers, each logs <code>i</code>. What prints? This one combines memory and the event loop.</div>
+  <div data-trace="varloop"></div>
+  <details class="speaker-notes"><summary>Teacher notes · the classic interview question</summary>
+    <p><span class="n ans">ANSWER</span> <code>3 3 3</code>.</p>
+    <p><span class="n wrong">COMMON WRONG ANSWER</span> <code>0 1 2</code>. Two ideas fix it, so ask both: “When do the callbacks run?” (After the loop has finished: event loop.) “How many <code>i</code> variables are there?” (One: memory.)</p>
+    <p><span class="n say">SAY</span> “The callbacks don't remember the <b>value</b> of <code>i</code> when they were made. They remember <b>where <code>i</code> lives</b> (an arrow to the scope), and read it when they run.”</p>
+    <p><span class="n stuck">WHY 3 AND NOT 2?</span> The loop stops when <code>i &lt; 3</code> is false, so <code>i</code> has to reach 3 first.</p>
+  </details>
+</template>
+
+<template data-part="01 · The engine" data-title="Fixed with let" data-time="2 MIN" data-label="ENGINE 07 · TRACE" data-optional>
+  <div data-predict="20">One word changed. Predict again.</div>
+  <div data-trace="letloop"></div>
+  <details class="speaker-notes"><summary>Teacher notes · same timing, different memory</summary>
+    <p><span class="n ans">ANSWER</span> <code>0 1 2</code>.</p>
+    <p><span class="n say">SAY</span> “The event loop part didn't change at all: the callbacks still run after the loop. What changed is <b>memory</b>: <code>let</code> makes a new <code>i</code> for each pass, so each callback has its own. This is one of the reasons we said ‘never use <code>var</code>’.”</p>
+  </details>
+</template>
+
+<!-- ================= 02 · PROMISES & AWAIT (≈14 MIN) ================= -->
+
+<template data-part="02 · Promises & await" data-title="A promise is an object" data-time="2 MIN" data-label="PROMISES 01 · THE OBJECT">
+  <div class="eyebrow">A RESTAURANT BUZZER FOR A VALUE THAT ISN'T READY YET</div>
+  <h2>A promise lives on the <span class="accent">heap</span>.</h2>
+  <div class="states">
+    <div class="state pending">pending<small>waiting</small></div>
+    <div class="state-arrows"><span>resolve(value) →</span><span>reject(error) →</span></div>
+    <div style="display:grid;gap:10px"><div class="state ok">fulfilled<small>has a value</small></div><div class="state err">rejected<small>has an error</small></div></div>
+  </div>
+  <div class="bite">
+    <div><b>INSIDE</b>A state, a value (or error), and a list of <b>reactions</b>: your <code>.then</code> callbacks.</div>
+    <div><b>SETTLES ONCE</b>Fulfilled or rejected, it never changes again.</div>
+    <div><b>THEN…</b>Each reaction goes to the <b>microtask queue</b>. Never run on the spot.</div>
+  </div>
+  <div class="discuss">Even if a promise is <i>already</i> fulfilled, <code>.then</code> still waits in the queue. <b>Why would anyone design it that way?</b></div>
+  <details class="speaker-notes"><summary>Teacher notes · keep it to the picture</summary>
+    <p><span class="n say">SAY</span> “<code>.then(fn)</code> pushes <code>fn</code> into a list inside the object. When the promise settles, that list moves to the microtask queue. That's the whole trick.”</p>
+    <p><span class="n ans">ANSWER</span> (to the talk prompt) So your code behaves the <b>same</b> whether the data was cached or came from the network. Otherwise log order would depend on luck.</p>
+    <p><span class="n stuck">IF ASKED</span> Callbacks used to nest into “pyramids of doom”. Promises (2015) flattened them; async/await (2017) is nicer syntax on top. Same event loop underneath.</p>
+  </details>
+</template>
+
+<template data-part="02 · Promises & await" data-title="Promise vs setTimeout" data-time="3 MIN" data-label="PROMISES 02 · TRACE">
+  <div data-predict="60">The code from the very first slide. A 0 ms timer and an already-finished promise. Who wins?</div>
+  <div data-trace="promiseVsTimeout"></div>
+  <details class="speaker-notes"><summary>Teacher notes · the payoff for slide 1</summary>
+    <p><span class="n do">DO</span> Before revealing, look back at the guesses you wrote on the board in the first minute. “Has anyone changed their mind?”</p>
+    <p><span class="n ans">ANSWER</span> <code>1 4 3 2</code>.</p>
+    <p><span class="n wrong">COMMON WRONG ANSWER</span> <code>1 4 2 3</code>: “the timer was queued first.” True, but it's in a <b>different queue</b>. Rule 2: after the script (a task) finishes, <b>all</b> microtasks run before the next task.</p>
+    <p><span class="n stuck">ANALOGY</span> The task queue is the line at a coffee shop. The microtask queue is “one more thing” from the person at the counter: the barista finishes all of those before calling the next person in line.</p>
+  </details>
+</template>
+
+<template data-part="02 · Promises & await" data-title="await pauses one function" data-time="2 MIN" data-label="ASYNC 01 · TRACE">
+  <div data-predict="30">Four logs. Does <code>await</code> freeze the whole program, or just <code>load</code>?</div>
+  <div data-trace="await"></div>
+  <details class="speaker-notes"><summary>Teacher notes · where does a paused function go?</summary>
+    <p><span class="n ans">ANSWER</span> <code>script: start</code>, <code>load: start</code>, <code>script: end</code>, <code>load: done</code>.</p>
+    <p><span class="n wrong">COMMON WRONG ANSWER</span> <code>load: start</code> after <code>script: end</code> (“async functions start later”). No: they run synchronously <b>up to the first await</b>.</p>
+    <p><span class="n say">SAY</span> At step 3, point at the heap: “The paused function's frame can't stay on the stack, because the stack has to empty for the event loop to keep going. So the engine moves it to the heap, along with its local variables. When the microtask runs, it's put back. That's memory and the event loop working together.”</p>
+    <p><span class="n stuck">IF ASKED</span> “Even <code>await null</code> waits?” Yes, <code>await</code> always waits at least one microtask, even for a value that's already there.</p>
+  </details>
+</template>
+
+<template data-part="02 · Promises & await" data-title="The final boss" data-time="4 MIN" data-label="ASYNC 02 · TRACE">
+  <div data-predict="90">Everything at once: a timer, an async function, a promise. Six logs. Write your answer down.</div>
+  <div data-trace="boss"></div>
+  <details class="speaker-notes"><summary>Teacher notes · give this one the full routine</summary>
+    <p><span class="n do">DO</span> Full 90 seconds. Have pairs agree on one answer. Write 3–4 different answers on the board and vote.</p>
+    <p><span class="n ans">ANSWER</span> <code>1 3 6 4 5 2</code>.</p>
+    <p><span class="n wrong">COMMON WRONG ANSWERS</span> <code>1 3 6 5 4 2</code> (they think <code>.then</code> beats <code>await</code>: but <code>run</code>'s continuation was queued first, on line 7, before line 12 ran). <code>1 6 3 …</code> (they think <code>run()</code> starts later: it's synchronous until the await).</p>
+    <p><span class="n stuck">HOW TO WALK IT</span> Make three columns on the board: SYNC / MICRO / TASK. Read the code top to bottom and drop each log into a column. Sync: 1, 3, 6. Micro (in order queued): 4, 5. Task: 2. Read them off left to right.</p>
+  </details>
+</template>
+
+<template data-part="02 · Promises & await" data-title="One after another, or all at once?" data-time="3 MIN" data-label="ASYNC 03 · LIVE · SYSTEMS">
+  <div data-predict="30">Three fake requests of 1 second each. How long do the sequential version and the parallel version take?</div>
+  <h2>Don't wait in line when you <span class="accent">don't have to</span>.</h2>
+  <script type="text/plain" data-run data-mark="10-12,16">
+    const wait = (ms, value) =>
+      new Promise((resolve) => setTimeout(() => resolve(value), ms));
+
+    // Pretend each of these is a request that takes 1 second.
+    const getUser = () => wait(1000, "user");
+    const getPosts = () => wait(1000, "posts");
+    const getFriends = () => wait(1000, "friends");
+
+    console.log("one after another…");
+    const a = await getUser();
+    const b = await getPosts();
+    const c = await getFriends();
+    console.log("sequential done:", a, b, c);
+
+    console.log("all at once…");
+    const [x, y, z] = await Promise.all([getUser(), getPosts(), getFriends()]);
+    console.log("parallel done:", x, y, z);
+  </script>
+  <div class="cards">
+    <div><b><code>Promise.all([...])</code></b><p>Waits for all of them. Rejects as soon as <b>any</b> one fails.</p></div>
+    <div><b><code>Promise.allSettled([...])</code></b><p>Waits for all of them, and tells you which worked and which failed.</p></div>
+    <div><b><code>Promise.race([...])</code></b><p>Settles as soon as the <b>first</b> one does. Handy for timeouts.</p></div>
+  </div>
+  <div class="discuss">When can you <b>not</b> use <code>Promise.all</code>? Think of two requests where one needs the other's answer.</div>
+  <details class="speaker-notes"><summary>Teacher notes · the systems design payoff</summary>
+    <p><span class="n ans">ANSWER</span> Sequential ≈ 3000 ms. Parallel ≈ 1000 ms (look at the timestamps: done at ~4000 ms, 1000 after the sequential part).</p>
+    <p><span class="n say">SAY</span> “Calling <code>getUser()</code> <b>starts</b> the request. <code>await</code> only decides when you look at the answer. In the parallel version all three start before we wait for any of them.”</p>
+    <p><span class="n ask">ASK</span> (systems) “Can we always do this?” No: if <code>getPosts</code> needs the user's id from <code>getUser</code>, it <b>depends</b> on it and must wait. Draw a dependency graph on the board: only independent requests can run in parallel. A chain of dependent requests is called a <b>waterfall</b>, and it's the #1 reason real web apps feel slow.</p>
+    <p><span class="n do">DO</span> Change one of the waits to <code>Promise.reject(new Error("down"))</code> inside <code>Promise.all</code> to show it fails fast.</p>
+  </details>
+</template>
+
+<!-- ================= 03 · THE NETWORK (≈10 MIN) ================= -->
+
+<template data-part="03 · The network" data-title="HTTP in two minutes" data-time="2 MIN" data-label="NETWORK 01 · HTTP">
+  <div class="eyebrow">AN API IS A MENU FOR PROGRAMS · HTTP IS THE WAITER</div>
+  <h2>A request goes out. A response <span class="accent">comes back</span>.</h2>
+  <div class="grid2">
+    <div>
+      <div class="http-label">REQUEST · CLIENT → SERVER</div>
+      <div class="http"><span class="m">GET</span> <span class="u">/api/v2/pokemon/pikachu</span> HTTP/1.1
+<span class="h">Host: pokeapi.co
+Accept: application/json</span></div>
+    </div>
+    <div>
+      <div class="http-label">RESPONSE · SERVER → CLIENT</div>
+      <div class="http">HTTP/1.1 <span class="s">200 OK</span>
+<span class="h">Content-Type: application/json</span>
+
+{"id":25,"name":"pikachu", …}</div>
+    </div>
+  </div>
+  <div class="bite">
+    <div><b>GET POST PATCH DELETE</b>The verb: read, create, update, remove. The path is the noun.</div>
+    <div><b>2xx</b>It worked. <code>200</code>, <code>201 Created</code></div>
+    <div><b>4xx</b><b>You</b> did something wrong. <code>404</code>, <code>429</code></div>
+    <div><b>5xx</b>The server broke. Maybe retry later.</div>
+  </div>
+  <div class="discuss">Mini Instagram: what method + path would you use to <b>like post 42</b>? And why must it <i>not</i> be a GET?</div>
+  <details class="speaker-notes"><summary>Teacher notes · menu, waiter, kitchen</summary>
+    <p><span class="n say">SAY</span> “You don't walk into the kitchen. You read the menu (the API), tell the waiter (HTTP), and food comes back. Headers arrive <b>before</b> the body: remember that for the next slide.”</p>
+    <p><span class="n ans">ANSWER</span> <code>POST /posts/42/likes</code>. GETs must be <b>safe</b>: browsers, caches, and link previews send GETs on their own. You don't want a link preview liking posts.</p>
+    <p><span class="n do">DO</span> If there's time, open <code>https://pokeapi.co/api/v2/pokemon/pikachu</code> in a tab. “An API is a website made for programs.”</p>
+  </details>
+</template>
+
+<template data-part="03 · The network" data-title="fetch, and the 404 surprise" data-time="3 MIN" data-label="NETWORK 02 · LIVE">
+  <div data-predict="45">The second Pokémon doesn't exist. Does <code>fetch</code> jump straight to <code>catch</code>? What exactly prints?</div>
+  <h2><code style="font-size:inherit">fetch</code> only rejects when the <span class="accent">network</span> fails.</h2>
+  <script type="text/plain" data-run data-net data-mark="4,6">
+    for (const name of ["pikachu", "notapokemon"]) {
+      try {
+        const url = "https://pokeapi.co/api/v2/pokemon/" + name;
+        const res = await fetch(url);
+        console.log(name, "· status", res.status, "· ok", res.ok);
+        const data = await res.json();
+        console.log("  #" + data.id, data.name);
+      } catch (err) {
+        console.log("  caught:", err.name);
+      }
+    }
+  </script>
+  <div class="bite">
+    <div><b>AWAIT #1 · fetch()</b>Status + headers are here. A 404 is still a <b>response</b>, so no error.</div>
+    <div><b>AWAIT #2 · res.json()</b>Read + parse the body. “Not Found” isn't JSON, so <i>this</i> throws.</div>
+    <div><b>THE FIX</b><code>if (!res.ok) throw new Error(`HTTP ${res.status}`);</code></div>
+  </div>
+  <details class="speaker-notes"><summary>Teacher notes · the most common fetch bug</summary>
+    <p><span class="n ans">ANSWER</span> pikachu prints <code>status 200 · ok true</code> and <code>#25 pikachu</code>. notapokemon prints <code>status 404 · ok false</code>, then <code>caught: SyntaxError</code>. The catch runs, but for the wrong reason.</p>
+    <p><span class="n wrong">COMMON WRONG ANSWER</span> “It goes straight to catch with a 404.” That's axios, not fetch.</p>
+    <p><span class="n do">DO</span> Add the fix after line 5 and run again: now it's <code>caught: Error</code> with a useful message. Point at the timestamps: each gap is a network round trip.</p>
+    <p><span class="n stuck">IF THE WI-FI IS BAD</span> Switch the dropdown to <b>network: offline copy</b>. It's remembered on every slide.</p>
+  </details>
+</template>
+
+<template data-part="03 · The network" data-title="Loading, error, success" data-time="3 MIN" data-label="NETWORK 03 · LIVE DEMO" data-optional>
+  <div class="eyebrow"><span class="badge demo">LIVE</span>EVERY FETCH HAS THREE POSSIBLE SCREENS</div>
+  <h2>Design for the <span class="accent">wait</span> and the <span class="accent">failure</span>.</h2>
+  <div data-poke></div>
+  <div class="one-line">Every screen that fetches needs all three: <b>loading</b> (something is happening), <b>error</b> (what went wrong, and a way to try again), <b>success</b>. Turn on “Slow network” and “Network is down” to see the first two.</div>
+  <details class="speaker-notes"><summary>Teacher notes · run these in order</summary>
+    <p><span class="n do">DO</span> 1) Search <code>pikachu</code>: success. 2) Search <code>pikachuu</code>: a 404, handled nicely. 3) Tick <b>Slow network</b> and search again: point at the loading state. “Without it, the user thinks the button is broken and clicks five more times.” 4) Tick <b>Network is down</b>: a real <code>TypeError</code>, with a Try again button.</p>
+    <p><span class="n ask">ASK</span> “Which of these three states did your lesson 3 app have?” (Only success, because the data was in a file.)</p>
+    <p><span class="n stuck">IF THE WI-FI IS BAD</span> Switch to <b>network: offline copy</b> in the first dropdown.</p>
+  </details>
+</template>
+
+<template data-part="03 · The network" data-title="Race conditions" data-time="3 MIN" data-label="NETWORK 04 · SYSTEMS">
+  <div data-predict="45">The user types “p”, then “pi”, then “pikachu”. Three requests go out. The “p” response is slow. What ends up on screen?</div>
+  <h2>Responses don't come back <span class="accent">in order</span>.</h2>
+  <div class="timeline">
+    <div class="tl-row"><span>#1 GET /p</span><div class="tl-lane"><div class="tl-bar x" style="left:0;width:88%">slow… 404 arrives LAST</div></div></div>
+    <div class="tl-row"><span>#2 GET /pi</span><div class="tl-lane"><div class="tl-bar g" style="left:10%;width:35%">404</div></div></div>
+    <div class="tl-row"><span>#3 GET /pikachu</span><div class="tl-lane"><div class="tl-bar a" style="left:22%;width:30%">200 pikachu ✓</div></div></div>
+    <div class="tl-row"><span>screen shows</span><div class="tl-lane"><div class="tl-bar g" style="left:45%;width:7%">err</div><div class="tl-bar a" style="left:52%;width:36%">pikachu</div><div class="tl-bar x" style="left:88%;width:12%">“p”?!</div></div></div>
+  </div>
+  <div class="grid2" style="margin-top:12px">
+    <div class="cards" style="grid-template-columns:1fr;margin:0">
+      <div><b>The fix: ignore old answers</b><p>Remember which request is the latest, and drop any response that isn't. In React, that's the <code>ignore</code> flag set by the cleanup function. Or cancel the old request with an <code>AbortController</code>.</p></div>
+    </div>
+    <div class="cards" style="grid-template-columns:1fr;margin:0">
+      <div><b>Try it</b><p>On the “Loading, error, success” demo (one slide back), tick <b>Search as you type</b>, and type quickly. Then tick <b>Ignore out-of-date responses</b> and type again. Stale answers are crossed out in the log.</p></div>
+    </div>
+  </div>
+  <div class="discuss">Where else could "answers come back out of order" bite you? <b>Chat apps? Multiplayer games? Bank transfers?</b></div>
+  <details class="speaker-notes"><summary>Teacher notes · a real distributed-systems bug</summary>
+    <p><span class="n ans">ANSWER</span> The page briefly shows pikachu, then gets <b>overwritten</b> by the slow “p” error. The user typed pikachu and sees “not found”.</p>
+    <p><span class="n say">SAY</span> “The network doesn't promise order. Different requests can take different routes, hit different servers, or wait behind other traffic. Whenever you have more than one request in flight, ask: what if they come back in a different order?”</p>
+    <p><span class="n do">DO</span> Go back to the previous slide and do the live demo. Type “pikachu” fast with “Search as you type” on and the fix off. It may take a couple of tries to get a visible race; the random delays make it likely.</p>
+    <p><span class="n stuck">IF ASKED</span> “Why not just wait until the user stops typing?” That's <b>debouncing</b>, and it's a good idea too (fewer requests, less load on the server). But it doesn't fully fix races; you still need the ignore flag.</p>
+  </details>
+</template>
+
+<template data-part="03 · The network" data-title="N + 1 requests" data-time="3 MIN" data-label="NETWORK 05 · SYSTEMS" data-optional>
+  <div data-predict="60">A feed of 20 posts. For each post, we fetch its author. Each request takes 100 ms. How long does the feed take to load?</div>
+  <h2>The cost is in the <span class="accent">round trips</span>.</h2>
+  <script type="text/plain" data-label="THE NAIVE VERSION">
+    const posts = await getJSON("/posts?limit=20");          // 1 request
+    for (const post of posts) {
+      post.author = await getJSON(`/users/${post.userId}`);  // + 20 requests, one by one
+    }
+  </script>
+  <button class="reveal-btn" data-reveal>Reveal the three options</button>
+  <div class="answer">
+    <table class="tag-table" style="margin:0">
+      <tr><th>APPROACH</th><th>REQUESTS</th><th>TIME</th></tr>
+      <tr><td>await in a loop</td><td>1 + 20</td><td>21 × 100 ms ≈ <b>2.1 s</b></td></tr>
+      <tr><td>Promise.all over the authors</td><td>1 + 20</td><td>100 + 100 ms ≈ <b>0.2 s</b> (but 21 requests hit the server)</td></tr>
+      <tr><td>A better endpoint: <code>/posts?include=author</code></td><td>1</td><td>≈ <b>0.1 s</b>, and far less server load</td></tr>
+    </table>
+  </div>
+  <details class="speaker-notes"><summary>Teacher notes · back-of-the-envelope math</summary>
+    <p><span class="n ans">ANSWER</span> About 2.1 seconds: 21 sequential round trips.</p>
+    <p><span class="n say">SAY</span> “This is called the <b>N + 1 problem</b>: one request for the list, then N more, one per item. Promise.all fixes the waiting, but the server still gets 21 requests per user. With 10,000 users, that's 210,000 requests. Often the real fix is in the <b>API design</b>: let the client ask for what it needs in one go.”</p>
+    <p><span class="n ask">ASK</span> “If 20 posts are by only 3 different authors, what else could you do?” (Only fetch unique ids, and cache them in a <code>Map</code>.)</p>
+  </details>
+</template>
+
+<!-- ================= WRAP-UP ================= -->
+
+<template data-part="Wrap-up" data-title="The rules, on one slide" data-time="1 MIN" data-label="WRAP-UP · THE RULES" data-optional>
+  <div class="eyebrow">IF YOU REMEMBER NOTHING ELSE</div>
+  <h2>Seven <span class="accent">rules</span>.</h2>
+  <ol class="rules">
+    <li>JavaScript has <b>one</b> main thread. The browser does the waiting (timers, network) on its own threads.</li>
+    <li>Function calls push <b>frames</b> on the stack. Objects, closures, promises, and paused async functions live on the <b>heap</b>, as long as something can reach them.</li>
+    <li>Code runs <b>to completion</b>. Nothing interrupts it: not timers, not clicks, not responses.</li>
+    <li>When the stack is empty: run <b>all microtasks</b> (promise callbacks, code after <code>await</code>), then <b>one task</b> (timers, events), and repeat.</li>
+    <li><code>new Promise(fn)</code> runs <code>fn</code> now. <code>.then</code> callbacks always wait for the microtask queue.</li>
+    <li><code>await</code> pauses <b>one function</b>, not the page. <code>async</code> functions always return a promise.</li>
+    <li><code>fetch</code> only rejects on network failure: <b>check <code>res.ok</code></b>. Plan for loading, error, and out-of-order answers.</li>
+  </ol>
+  <details class="speaker-notes"><summary>Teacher notes · recap by asking</summary>
+    <p><span class="n do">DO</span> Hide the list (go back a slide), then ask the room to rebuild the rules from memory. Show this slide to check.</p>
+  </details>
+</template>
+
+<template data-part="Wrap-up" data-title="Exit ticket" data-time="2 MIN" data-label="WRAP-UP · EXIT TICKET">
+  <div data-predict="60">One last one, on your own. No talking. Write the output and one sentence of why.</div>
+  <h2>Before you <span class="accent">leave</span>.</h2>
+  <div class="grid2">
+    <script type="text/plain" data-label="EXIT TICKET" data-big>
+      console.log("A");
+      setTimeout(() => console.log("B"), 0);
+      (async () => {
+        console.log("C");
+        await fetch("/whatever");
+        console.log("D");
+      })();
+      Promise.resolve().then(() => console.log("E"));
+      console.log("F");
+    </script>
+    <div>
+      <button class="reveal-btn" data-reveal>Reveal</button>
+      <div class="answer"><b>A C F E B D</b> (almost always).<br>A, C, F are synchronous. E is a microtask. B is a 0 ms timer task. D needs a network round trip (many milliseconds), so it comes last. <b>Why “almost”?</b> D depends on the network, and you can never be sure how long that takes. B and D are only ordered by timing, not by a rule.</div>
+    </div>
+  </div>
+  <details class="speaker-notes"><summary>Teacher notes · checking understanding</summary>
+    <p><span class="n do">DO</span> Collect answers on paper, or have them hold up the answer on their phone. Quickly sort them into right / wrong piles: it tells you what to review next week.</p>
+    <p><span class="n ans">ANSWER</span> <code>A C F E B D</code>. The best answers notice that D's position depends on timing, not on a rule. That's the systems-thinking point to end on.</p>
+  </details>
+</template>
+
+<template data-part="Wrap-up" data-title="Homework" data-time="1 MIN" data-label="WRAP-UP · HOMEWORK" data-optional>
+  <div class="eyebrow">THIS WEEK</div>
+  <h2>Build a page that <span class="accent">talks to a server</span>.</h2>
+  <div class="cards">
+    <div><b>Pick an API</b><p>PokeAPI, a weather API, countries, dogs… anything free that allows browser requests.</p></div>
+    <div><b>Handle all three states</b><p>Loading, error with a retry button, success. Test with DevTools' network throttling.</p></div>
+    <div><b>Two requests in parallel</b><p>Use <code>Promise.all</code>, and explain why it's faster.</p></div>
+    <div><b>Puzzles</b><p>Four event-loop puzzles to reason through on paper.</p></div>
+  </div>
+  <button class="next-button" data-open="assignment" style="margin-top:12px">Open the assignment →</button>
+  <details class="speaker-notes"><summary>Teacher notes · close</summary>
+    <p><span class="n say">SAY</span> “Next time something on a website feels slow or glitchy, open DevTools → Network and look. You now know enough to explain what's going on.”</p>
+  </details>
+</template>
+
+</div>
+
+<script src="runner.js"></script>
+<script src="traces.js"></script>
+<script src="deck.js"></script>
+<script src="../lesson-switcher.js"></script>
+</body>
+</html>
