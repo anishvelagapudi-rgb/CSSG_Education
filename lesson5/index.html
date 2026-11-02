@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f3ed">
+  <title>CS + SG · Git Revisited</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html" aria-label="All lessons"><span class="brand-mark">&lt;/&gt;</span><span>CS + SG <small>LESSON 5 · GIT REVISITED · 20 MIN</small></span></a>
+    <nav class="mode-tabs" aria-label="Lesson mode">
+      <button class="mode-tab active" data-mode="slides">Slides</button>
+      <button class="mode-tab" data-mode="sandbox">Sandbox</button>
+      <button class="mode-tab" data-mode="game">Game</button>
+    </nav>
+    <div class="top-meta"><span id="totalTime"></span></div>
+  </header>
+  <div class="progress-track"><div id="progress"></div></div>
+
+  <div class="layout" id="slidesMode">
+    <aside class="sidebar">
+      <div class="side-heading">TODAY <span id="routeCount"></span></div>
+      <nav id="sectionNav" aria-label="Lesson slides"></nav>
+      <div class="sidebar-note"><b>Teacher copy · 20 minutes</b>
+        <p>Aim for the <b>solo basics</b> by ~9 min, <b>teamwork</b> by ~16, then the game and the exit ticket.</p>
+        <p>Every diagram is clickable: let a student drive. <b>→</b> steps the Alice &amp; Bob demo before moving on. <b>F</b> presents full screen.</p>
+        <p>Blue <b>TALK</b> boxes are quick questions for the room. Answers are in the teacher notes.</p></div>
+    </aside>
+    <main id="main" tabindex="-1">
+      <div class="slide-top"><span id="sectionLabel" class="eyebrow"></span><span id="sectionTime" class="time-pill"></span></div>
+      <article id="slide"></article>
+      <footer class="slide-footer"><span id="slideIndex"></span><div class="footer-controls"><button id="prev" class="arrow-button" aria-label="Previous slide">←</button><button id="present" class="arrow-button" aria-label="Toggle full screen presentation">⛶ <span>Present</span></button><button id="next" class="next-button">Next <span>→</span></button></div></footer>
+    </main>
+  </div>
+
+  <main class="page" id="sandboxMode" hidden>
+    <div class="eyebrow">A FAKE GIT IN YOUR BROWSER · NOTHING YOU TYPE CAN BREAK ANYTHING</div>
+    <h1>Git sandbox</h1>
+    <p class="lead">Type real Git commands and watch the commit graph change. Work through the checklist; it ticks itself.</p>
+    <div class="sandbox-grid">
+      <div id="sandboxHolder"></div>
+      <aside class="challenges"><h3>Challenges</h3><ol id="challengeList"></ol>
+        <p class="hint" style="margin:14px 0 0">The filled label is <b>HEAD</b>: the branch you're on. New commits go wherever HEAD is. Faded commits aren't part of your current branch's history.</p></aside>
+    </div>
+  </main>
+
+  <main class="page" id="gameMode" hidden>
+    <div class="eyebrow">CLASS GAME · TWO TEAMS · ABOUT 5 MINUTES</div>
+    <h1>Merge Conflict <span class="accent">: the game</span></h1>
+    <div class="game" id="gameRoot"></div>
+  </main>
+</div>
+
+<div id="slideTemplates" hidden>
+
+<!-- ================= INTRO ================= -->
+
+<template data-part="Intro" data-title="Git, revisited" data-time="1 MIN" data-label="INTRO · LESSON 5 · 20 MIN">
+  <div class="title-slide">
+    <div>
+      <div class="eyebrow">GIT REVISITED · LESSON 5</div>
+      <h1>Save points, <span class="accent">and sharing them</span>.</h1>
+      <p class="lead">Git does two jobs: it keeps a <b>history of every version</b> of your project, and it lets <b>a whole team</b> work on the same code without overwriting each other.</p>
+      <div class="flow">
+        <div><b>Solo</b><small>add, commit, history</small></div><i>→</i>
+        <div><b>Branches</b><small>try things safely</small></div><i>→</i>
+        <div><b>Teams</b><small>push, pull, conflicts</small></div><i>→</i>
+        <div><b>Game</b><small>team vs team</small></div>
+      </div>
+    </div>
+    <div class="title-art"><span class="c"># the whole lesson, in 6 lines</span>
+<span class="g">$</span> git clone &lt;url&gt;     <span class="c"># get the project</span>
+<span class="g">$</span> git switch -c navbar <span class="c"># make a branch</span>
+<span class="g">$</span> git add .            <span class="c"># stage changes</span>
+<span class="g">$</span> git commit -m "..."  <span class="c"># save a snapshot</span>
+<span class="g">$</span> git pull             <span class="c"># get their work</span>
+<span class="g">$</span> git push             <span class="c"># share yours</span></div>
+  </div>
+  <div class="talk"><b>TALK</b>Has Git ever yelled at you? What did it say?</div>
+  <details class="speaker-notes"><summary>Teacher notes · hook</summary>
+    <p><span class="n say">SAY</span> “You've used Git already, maybe by copy-pasting commands until it worked. Today the goal is to know <i>where</i> your code is after each command, so the error messages make sense.”</p>
+    <p><span class="n ask">ASK</span> The TALK question. Take two answers. Common ones: “rejected”, “merge conflict”, “detached HEAD”, “nothing to commit”. Say: “We'll see the first two today.”</p>
+  </details>
+</template>
+
+<!-- ================= 01 · SOLO ================= -->
+
+<template data-part="01 · Solo" data-title="Four places your code lives" data-time="3 MIN" data-label="SOLO 01 · THE MAP">
+  <h2>Your change travels through <span class="accent">four places</span>.</h2>
+  <p class="lead" style="margin-bottom:16px">Most Git confusion is not knowing which box your change is in. Click left to right.</p>
+  <div data-widget="places"></div>
+  <div class="talk"><b>TALK</b>Edit a file, <code>git add</code>, then edit another file and <code>git commit</code>. Which file got saved? Try it.</div>
+  <details class="speaker-notes"><summary>Teacher notes · the four boxes</summary>
+    <p><span class="n do">DO</span> Click: Edit → git add → git commit → git push. Narrate each box. The analogy: <b>edit</b> = write a letter, <b>add</b> = put it in the envelope, <b>commit</b> = seal it, <b>push</b> = mail it.</p>
+    <p><span class="n do">DO</span> Then click <b>git commit</b> with nothing staged: “nothing to commit”. That's the #1 beginner error.</p>
+    <p><span class="n ans">ANSWER</span> Only the first file. Commit takes what's staged; the second edit stays in the working directory.</p>
+    <p><span class="n do">TEASER</span> If there's time, click “A teammate pushes” and then git push: rejected. “Hold that thought for 5 minutes.”</p>
+  </details>
+</template>
+
+<template data-part="01 · Solo" data-title="The commands you'll actually use" data-time="2 MIN" data-label="SOLO 02 · CHEAT SHEET">
+  <h2>About <span class="accent">ten commands</span> cover 95% of your Git life.</h2>
+  <p class="hint">Click a card for an example.</p>
+  <div class="cmd-grid">
+    <div class="cmd-group">Starting</div>
+    <button class="cmd-card"><code>git clone &lt;url&gt;</code><span>Download a repo from GitHub. Once per project.</span><span class="more">e.g. <code>git clone https://github.com/cssg/site</code> makes a <code>site/</code> folder with the full history.</span></button>
+    <button class="cmd-card"><code>git init</code><span>Turn the current folder into a new repo.</span><span class="more">Only for brand new projects. Creates a hidden <code>.git/</code> folder; that folder <i>is</i> the repo.</span></button>
+    <button class="cmd-card"><code>git status</code><span>Where am I? What changed? Always safe.</span><span class="more">Shows your branch, staged files, unstaged files, and whether you're ahead of GitHub. Run it before every other command.</span></button>
+    <button class="cmd-card"><code>git log --oneline</code><span>The history of commits, newest first.</span><span class="more">Each line is a commit ID and its message. Press <code>q</code> to quit the viewer.</span></button>
+    <div class="cmd-group">Saving</div>
+    <button class="cmd-card"><code>git add &lt;file&gt;</code><span>Stage a change for the next commit.</span><span class="more"><code>git add .</code> stages everything in this folder. Check <code>git status</code> first so you don't add junk.</span></button>
+    <button class="cmd-card"><code>git commit -m "…"</code><span>Save a snapshot of what's staged.</span><span class="more">Message = what and why: <code>"Fix navbar on mobile"</code>, not <code>"stuff"</code>.</span></button>
+    <button class="cmd-card"><code>git diff</code><span>Line-by-line: what did I change?</span><span class="more"><code>git diff</code> = unstaged changes. <code>git diff --staged</code> = what you're about to commit.</span></button>
+    <button class="cmd-card"><code>git restore &lt;file&gt;</code><span>Throw away unsaved edits to a file.</span><span class="more">Careful: there's no undo. The file goes back to the last commit.</span></button>
+    <div class="cmd-group">Branches &amp; teamwork</div>
+    <button class="cmd-card"><code>git switch -c &lt;name&gt;</code><span>Make a new branch and move onto it.</span><span class="more"><code>git switch main</code> goes back. Older tutorials say <code>git checkout -b</code>; it's the same thing.</span></button>
+    <button class="cmd-card"><code>git merge &lt;name&gt;</code><span>Bring another branch into this one.</span><span class="more">Switch to the branch you want to <i>receive</i> the work first, e.g. <code>git switch main</code> then <code>git merge navbar</code>.</span></button>
+    <button class="cmd-card"><code>git pull</code><span>Download new commits and merge them in.</span><span class="more">Do it <b>before</b> you start working, so you build on the latest code.</span></button>
+    <button class="cmd-card"><code>git push</code><span>Upload your commits to GitHub.</span><span class="more">First push of a new branch: <code>git push -u origin navbar</code>. After that, plain <code>git push</code>.</span></button>
+  </div>
+  <details class="speaker-notes"><summary>Teacher notes · cheat sheet</summary>
+    <p><span class="n say">SAY</span> “You don't need to memorize these. Know the four boxes from the last slide and you can work out which command moves code between them.”</p>
+    <p><span class="n ask">ASK</span> “Which two commands touch the internet?” <span class="n ans">ANSWER</span> <code>pull</code> and <code>push</code> (and <code>clone</code>). Everything else is on your laptop, even with Wi-Fi off.</p>
+  </details>
+</template>
+
+<template data-part="01 · Solo" data-title="Commits are a chain, branches are labels" data-time="3 MIN" data-label="SOLO 03 · BRANCHES · LIVE">
+  <h2>Commits form a chain. <span class="accent">Branches are just labels.</span></h2>
+  <p class="lead" style="margin-bottom:14px">Each commit points back to its parent. A branch is a sticky note on one commit, and <b>HEAD</b> is where you are. Click the commands in order, or type your own.</p>
+  <div data-widget="sim" data-chips='git commit -m "homepage"|git switch -c navbar|git commit -m "add navbar"|git commit -m "style navbar"|git switch main|git commit -m "fix typo"|git merge navbar|git log --oneline'></div>
+  <div class="talk"><b>TALK</b>After <code>git switch main</code>, where did the navbar commits go? Did we lose them?</div>
+  <details class="speaker-notes"><summary>Teacher notes · branches</summary>
+    <p><span class="n do">DO</span> Click the chips left to right. Pause after <code>switch -c navbar</code>: “Nothing new was made. We added a second label. HEAD moved onto it.”</p>
+    <p><span class="n ans">ANSWER</span> Nowhere. They're safe on the navbar branch; main just doesn't include them yet (they fade out). That's why branches are cheap and safe: experiment on a branch, main stays clean.</p>
+    <p><span class="n do">DO</span> After <code>git merge navbar</code>, point at the ringed commit: “A merge commit has <b>two parents</b>. It ties the histories together.”</p>
+    <p><span class="n say">SAY</span> “There's a bigger version of this in the Sandbox tab with challenges. Try it at home.”</p>
+  </details>
+</template>
+
+<!-- ================= 02 · TEAMS ================= -->
+
+<template data-part="02 · Teams" data-title="Two people, one repo" data-time="3 MIN" data-label="TEAMS 01 · STEP THROUGH">
+  <h2>Two people, <span class="accent">one repo</span>, three copies.</h2>
+  <div data-widget="team"></div>
+  <details class="speaker-notes"><summary>Teacher notes · Alice &amp; Bob</summary>
+    <p><span class="n do">DO</span> Press → to step (it steps the demo before moving to the next slide). Ask the room to predict before steps 4 and 5.</p>
+    <p><span class="n ask">ASK</span> Before step 5: “Bob pushes. What happens?” Many will say it overwrites Alice. <span class="n ans">ANSWER</span> Rejected, because accepting would erase C.</p>
+    <p><span class="n ask">ASK</span> “What's the fix?” <span class="n ans">ANSWER</span> Pull, then push. <b>Never</b> <code>git push --force</code> on a shared branch: that's how you actually erase Alice's work.</p>
+    <p><span class="n say">SAY</span> “Every laptop has the full history. GitHub isn't magic; it's just the copy everyone agreed to share.”</p>
+  </details>
+</template>
+
+<template data-part="02 · Teams" data-title="Conflict or not?" data-time="1 MIN" data-label="TEAMS 02 · PREDICT">
+  <h2>Will Git merge it <span class="accent">by itself</span>?</h2>
+  <p class="lead">Thumbs up = Git handles it. Thumbs down = merge conflict. Vote, then click.</p>
+  <div class="qcards">
+    <button class="qcard"><span class="who">ALICE · BOB</span>Alice edits <code>index.html</code>. Bob edits <code>style.css</code>.<span class="ans no"><b>NO CONFLICT</b>Different files. Git just combines them.</span><span class="tap">click to reveal</span></button>
+    <button class="qcard"><span class="who">ALICE · BOB</span>Both edit <code>index.html</code>: Alice changes line 3, Bob changes line 40.<span class="ans no"><b>NO CONFLICT</b>Same file is fine. Git merges line by line, and these lines are far apart.</span><span class="tap">click to reveal</span></button>
+    <button class="qcard"><span class="who">ALICE · BOB</span>Both change <b>line 3</b> of <code>index.html</code>, to different text.<span class="ans yes"><b>CONFLICT</b>Git can't know which version is right, so a human has to decide.</span><span class="tap">click to reveal</span></button>
+    <button class="qcard"><span class="who">ALICE · BOB</span>Alice deletes <code>old.js</code>. Bob fixes a bug in <code>old.js</code>.<span class="ans yes"><b>CONFLICT</b>“Modify/delete”: keep the file with Bob's fix, or delete it? A human decides.</span><span class="tap">click to reveal</span></button>
+  </div>
+  <div class="rule"><b>RULE</b>A conflict means two people changed the <b>same lines</b>. It's not an error. Git is asking you a question.</div>
+  <details class="speaker-notes"><summary>Teacher notes · conflict or not</summary>
+    <p><span class="n do">DO</span> Read each card, vote thumbs up/down, then click. Card 2 catches most people: same file is fine.</p>
+    <p><span class="n say">SAY</span> “Fewer conflicts: pull often, keep branches short-lived, don't all reformat the same file.”</p>
+  </details>
+</template>
+
+<template data-part="02 · Teams" data-title="Fixing a merge conflict" data-time="2 MIN" data-label="TEAMS 03 · HANDS ON">
+  <h2>Fixing a conflict: <span class="accent">make the file right, delete the markers</span>.</h2>
+  <p class="lead" style="margin-bottom:16px">You ran <code>git pull</code> and Bob had changed the same heading. Git wrote <b>both</b> versions into the file. Pick what the file should say.</p>
+  <div data-widget="resolve"></div>
+  <details class="speaker-notes"><summary>Teacher notes · resolving</summary>
+    <p><span class="n say">SAY</span> “Between <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> and <code>=======</code> is <b>yours</b>. Between <code>=======</code> and <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> is <b>theirs</b>. Those three marker lines are not code; they must go.”</p>
+    <p><span class="n do">DO</span> Let a student pick. Then click “commit with the markers” for a laugh. It happens on real teams.</p>
+    <p><span class="n say">SAY</span> “VS Code puts buttons above each conflict: <i>Accept Current / Accept Incoming / Accept Both</i>. Same idea.”</p>
+  </details>
+</template>
+
+<template data-part="02 · Teams" data-title="The team workflow" data-time="1 MIN" data-label="TEAMS 04 · HOW REAL TEAMS DO IT">
+  <h2>How real teams use it: <span class="accent">branch → PR → merge</span>.</h2>
+  <p class="hint">Nobody commits straight to main. Click each step.</p>
+  <div class="pipeline">
+    <div class="pipe"><span class="num">01</span><b>Get the latest</b><code>git switch main</code><code>git pull</code>
+      <template><b>Always start from the newest main.</b> Building on old code is the main cause of conflicts.</template></div>
+    <div class="pipe"><span class="num">02</span><b>Branch</b><code>git switch -c navbar</code>
+      <template><b>One branch per feature or fix.</b> Name it after what you're doing: <code>navbar</code>, <code>fix-login</code>.</template></div>
+    <div class="pipe"><span class="num">03</span><b>Commit often</b><code>git add .</code><code>git commit -m</code>
+      <template><b>Small commits with clear messages.</b> Each one is a save point you can go back to.</template></div>
+    <div class="pipe"><span class="num">04</span><b>Push the branch</b><code>git push -u origin navbar</code>
+      <template><b>Your branch is now on GitHub</b>, but main is untouched. Teammates can see it and try it.</template></div>
+    <div class="pipe"><span class="num">05</span><b>Pull request</b><span class="hint">on github.com</span>
+      <template><b>A PR asks: “please merge navbar into main.”</b> A teammate reads the diff, leaves comments, approves. Conflicts show up here, before they hit main.</template></div>
+    <div class="pipe"><span class="num">06</span><b>Merge &amp; repeat</b><span class="hint">then everyone</span> <code>git pull</code>
+      <template><b>Click “Merge” on GitHub.</b> Everyone pulls main, deletes the old branch, and starts the next one from step 1.</template></div>
+  </div>
+  <div class="pipe-detail"><span class="hint">Click a step above.</span></div>
+  <details class="speaker-notes"><summary>Teacher notes · workflow</summary>
+    <p><span class="n say">SAY</span> “For your club projects: one branch per feature, open a PR, get one person to look at it. That's the professional workflow, and it's the same at Google.”</p>
+  </details>
+</template>
+
+<!-- ================= 03 · PLAY ================= -->
+
+<template data-part="03 · Play" data-title="Game: Merge Conflict" data-time="3 MIN" data-label="PLAY · TEAM GAME" data-game>
+  <div class="title-slide" style="min-height:380px">
+    <div>
+      <div class="eyebrow">CLASS GAME · TWO TEAMS</div>
+      <h1>Merge <span class="accent">Conflict</span>.</h1>
+      <p class="lead">Split the room in two. Each round is a real situation: pick the Git command that fixes it.</p>
+      <div class="cards">
+        <div><b>Your turn</b><p>Right answer: <b>100</b> points + up to 50 for speed.</p></div>
+        <div><b>Steal</b><p>Wrong or too slow? The other team gets one shot for <b>50</b>.</p></div>
+        <div><b>Talk fast</b><p>Teams can discuss, but the clock is running.</p></div>
+      </div>
+      <button class="next-button" data-open="game" style="height:46px;font-size:15px;margin-top:6px">Open the game →</button>
+    </div>
+    <div class="title-art"><span class="c"># sample round</span>
+
+git push says:
+<span class="y">! [rejected] main -> main
+  (fetch first)</span>
+
+<span class="c"># what do you do?</span>
+ 1  git push --force
+ 2  git pull, then git push
+ 3  delete the repo
+ 4  git commit again</div>
+  </div>
+  <details class="speaker-notes"><summary>Teacher notes · game</summary>
+    <p><span class="n do">DO</span> Click “Open the game”, type team names, pick 6 questions for ~3 min or 10 for ~5. Keys 1–4 answer, Enter goes to the next question.</p>
+    <p><span class="n do">DO</span> Pick one “driver” per team who clicks/calls the answer, so the room doesn't shout over each other.</p>
+    <p><span class="n say">SAY</span> After each reveal, read the one-line explanation out loud. That's where the learning is.</p>
+  </details>
+</template>
+
+<template data-part="03 · Play" data-title="Exit ticket" data-time="1 MIN" data-label="WRAP-UP · EXIT TICKET">
+  <h2>Before you go: <span class="accent">three questions</span>.</h2>
+  <div class="cards">
+    <div><b>1 · Where is it?</b><p>You ran <code>git commit</code> but not <code>git push</code>. Can your teammate see your work?</p></div>
+    <div><b>2 · Why rejected?</b><p>In one sentence: why did GitHub refuse Bob's push, and what's the fix?</p></div>
+    <div><b>3 · Your call</b><p>Two of you need to edit the same file this week. What would you do to avoid a conflict?</p></div>
+  </div>
+  <div class="rule"><b>THIS WEEK</b>Work on your club project on a <b>branch</b> and open a <b>pull request</b>, even if you're the only reviewer. Practice in the <a href="#" data-open="sandbox">Sandbox tab</a> if you want to see it first.</div>
+  <details class="speaker-notes"><summary>Teacher notes · exit ticket</summary>
+    <p><span class="n ans">ANSWERS</span> 1: No, commits are local until pushed. 2: GitHub had a commit Bob didn't; accepting would erase it. Pull, then push. 3: Pull first, split the file into sections, commit and push often, or just talk to each other.</p>
+  </details>
+</template>
+
+</div>
+
+<script src="gitsim.js"></script>
+<script src="deck.js"></script>
+<script src="game.js"></script>
+<script src="../lesson-switcher.js"></script>
+</body>
+</html>

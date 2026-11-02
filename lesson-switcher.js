@@ -6,7 +6,8 @@
     { n: 2, title: 'HTML & CSS' },
     { n: 3, title: 'React + TypeScript' },
     { n: 4, title: 'Async, HTTP & fetch' },
-    { n: 4, dir: 'lesson4-short', tag: '4·40', title: 'Async & fetch · 40 min' }
+    { n: 4, dir: 'lesson4-short', tag: '4·40', title: 'Async & fetch · 40 min' },
+    { n: 5, title: 'Git Revisited · 20 min' }
   ];
   LESSONS.forEach(function (l) { l.dir = l.dir || 'lesson' + l.n; l.tag = l.tag || String(l.n); });
 
