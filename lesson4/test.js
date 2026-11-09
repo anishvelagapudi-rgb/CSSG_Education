@@ -1,5 +1,5 @@
-for (var i = 0; i < 3; i++) {
-  setTimeout(() => {
-    console.log(i);
-  }, i * 1000);
-}
+let res = fetch('https://google.com').then(console.log("GOOGLE.com should have returned")
+  );
+
+
+console.log(1);
