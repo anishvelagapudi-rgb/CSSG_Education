@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f3ed">
+  <title>CS + SG · Auth &amp; RLS</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html" aria-label="All lessons"><span class="brand-mark">&lt;/&gt;</span><span>CS + SG <small>LESSON 7 · AUTH &amp; SUPABASE RLS · ~40 MIN</small></span></a>
+    <nav class="mode-tabs" aria-label="Lesson mode">
+      <button class="mode-tab active" data-mode="slides">Slides</button>
+      <button class="mode-tab" data-mode="lab">Policy Lab</button>
+      <button class="mode-tab" data-mode="game">Game</button>
+      <button class="mode-tab" data-mode="kit">Starter Code</button>
+    </nav>
+    <div class="top-meta"><span id="totalTime"></span></div>
+  </header>
+  <div class="progress-track"><div id="progress"></div></div>
+
+  <div class="layout" id="slidesMode">
+    <aside class="sidebar">
+      <div class="side-heading">TODAY <span id="routeCount"></span></div>
+      <nav id="sectionNav" aria-label="Lesson slides"></nav>
+      <div class="sidebar-note"><b>Teacher copy · ~40 minutes</b>
+        <p>Aim to finish <b>Auth</b> by ~20 min and <b>RLS</b> by ~34. Then the game, then <b>project time</b>. Hard stop at 45.</p>
+        <p>Short on time? Skip “What's inside a token” and play 6 game questions instead of 10.</p>
+        <p><b>→</b> steps the login demo before moving on. <b>F</b> presents full screen. Blue <b>TALK</b> boxes are questions for the room; answers are in the teacher notes.</p></div>
+    </aside>
+    <main id="main" tabindex="-1">
+      <div class="slide-top"><span id="sectionLabel" class="eyebrow"></span><span id="sectionTime" class="time-pill"></span></div>
+      <article id="slide"></article>
+      <footer class="slide-footer"><span id="slideIndex"></span><div class="footer-controls"><button id="prev" class="arrow-button" aria-label="Previous slide">←</button><button id="present" class="arrow-button" aria-label="Toggle full screen presentation">⛶ <span>Present</span></button><button id="next" class="next-button">Next <span>→</span></button></div></footer>
+    </main>
+  </div>
+
+  <main class="page" id="labMode" hidden>
+    <div class="eyebrow">A FAKE SUPABASE TABLE · NOTHING HERE TOUCHES A REAL DATABASE</div>
+    <h1>Policy Lab</h1>
+    <p class="lead">Pick the policies, then switch users and try to read, edit, delete and insert. The SQL on the left is what you'd paste into Supabase. Work through the checklist; it ticks itself.</p>
+    <div class="lab-grid">
+      <div id="labHolder"></div>
+      <aside class="challenges"><h3>Challenges</h3><ol id="challengeList"></ol>
+        <p class="hint" style="margin:14px 0 0">Faded rows are rows the current user <b>can't see</b>. To Postgres they don't exist, so deleting one isn't an error, it just matches 0 rows.</p></aside>
+    </div>
+  </main>
+
+  <main class="page" id="gameMode" hidden>
+    <div class="eyebrow">CLASS GAME · TWO TEAMS · ABOUT 5 MINUTES</div>
+    <h1>Access <span class="accent">Denied</span></h1>
+    <div class="game" id="gameRoot"></div>
+  </main>
+
+  <main class="page" id="kitMode" hidden>
+    <div class="eyebrow">PROJECT TIME · COPY, PASTE, ADAPT</div>
+    <h1>Add login + RLS to your project</h1>
+    <p class="lead">Every file here is built on the class boilerplate (React + Express + Supabase) and has been run. Swap <code>notes</code> for your own table name. Do the steps in order; each ends with a check.</p>
+    <nav class="kit-toc" id="kitToc"></nav>
+    <div class="kit" id="kit">
+
+      <section class="kit-step" id="k1">
+        <h3><span class="num">STEP 1</span>Supabase dashboard (2 min)</h3>
+        <ol>
+          <li><b>Authentication → Sign In / Providers → Email</b>: make sure Email is enabled. For class, turn <b>off</b> “Confirm email” so sign-ups work right away (the free email sender only sends a few emails per hour). Turn it back on before you launch.</li>
+          <li><b>Project Settings → API Keys</b>: copy the <b>Publishable</b> key (<code>sb_publishable_…</code>) and the <b>JWKS URL</b>. You already have the URL and secret key from last time.</li>
+        </ol>
+      </section>
+
+      <section class="kit-step" id="k2">
+        <h3><span class="num">STEP 2</span>Make a table that has an owner (3 min)</h3>
+        <p>Paste into <b>SQL Editor → Run</b>. The parts that matter: a <code>user_id</code> column that defaults to <code>auth.uid()</code>, RLS on, grants, and one policy per command.</p>
+        <div class="file" data-src="starter/schema-notes.sql" data-name="schema-notes.sql" data-tag="SQL EDITOR"></div>
+        <p class="hint">✅ Check: <b>Table Editor → notes</b> shows a green “RLS enabled” badge and 4 policies under <b>Authentication → Policies</b>.</p>
+      </section>
+
+      <section class="kit-step" id="k3">
+        <h3><span class="num">STEP 3</span>Backend: check the token, query as the user (8 min)</h3>
+        <ol>
+          <li><code>cd backend</code> then <code>npm install jose</code></li>
+          <li>Make sure <code>backend/.env</code> has all four Supabase values. The JWKS URL looks like <code>https://&lt;project-id&gt;.supabase.co/auth/v1/.well-known/jwks.json</code> (the old <code>.env.example</code> had a typo in it).</li>
+          <li>Add <code>src/auth.js</code>, replace <code>src/supabase.js</code> and <code>src/index.js</code>, add <code>src/routes/notes.js</code>.</li>
+        </ol>
+        <div class="file" data-src="starter/backend/.env.example" data-name="backend/.env.example" data-tag="REFERENCE"></div>
+        <div class="file" data-src="starter/backend/src/auth.js" data-name="backend/src/auth.js" data-tag="NEW"></div>
+        <div class="file" data-src="starter/backend/src/supabase.js" data-name="backend/src/supabase.js" data-tag="REPLACE"></div>
+        <div class="file" data-src="starter/backend/src/routes/notes.js" data-name="backend/src/routes/notes.js" data-tag="NEW"></div>
+        <div class="file" data-src="starter/backend/src/index.js" data-name="backend/src/index.js" data-tag="REPLACE · 2 NEW LINES"></div>
+        <p class="hint">✅ Check: <code>npm run dev</code>, then open <code>http://localhost:3000/api/notes</code>. You should get <code>{"error":"Not logged in"}</code>. That's a <b>good</b> sign: the bouncer works.</p>
+      </section>
+
+      <section class="kit-step" id="k4">
+        <h3><span class="num">STEP 4</span>Frontend: log in, send the token (8 min)</h3>
+        <ol>
+          <li><code>cd frontend</code> then <code>npm install @supabase/supabase-js</code></li>
+          <li>Add the two new <code>VITE_SUPABASE_…</code> lines to <code>frontend/.env</code>, then <b>restart</b> <code>npm run dev</code> (Vite only reads .env at start).</li>
+          <li>Add <code>supabase.ts</code>, <code>AuthForm.tsx</code>, <code>AuthGate.tsx</code>. Replace <code>api.ts</code>, <code>main.tsx</code>, and <code>App.tsx</code> (or keep your App and just call the new functions).</li>
+        </ol>
+        <div class="file" data-src="starter/frontend/.env.example" data-name="frontend/.env.example" data-tag="REFERENCE"></div>
+        <div class="file" data-src="starter/frontend/src/supabase.ts" data-name="frontend/src/supabase.ts" data-tag="NEW"></div>
+        <div class="file" data-src="starter/frontend/src/api.ts" data-name="frontend/src/api.ts" data-tag="REPLACE"></div>
+        <div class="file" data-src="starter/frontend/src/AuthForm.tsx" data-name="frontend/src/AuthForm.tsx" data-tag="NEW"></div>
+        <div class="file" data-src="starter/frontend/src/AuthGate.tsx" data-name="frontend/src/AuthGate.tsx" data-tag="NEW"></div>
+        <div class="file" data-src="starter/frontend/src/main.tsx" data-name="frontend/src/main.tsx" data-tag="REPLACE"></div>
+        <div class="file" data-src="starter/frontend/src/App.tsx" data-name="frontend/src/App.tsx" data-tag="REPLACE · EXAMPLE"></div>
+      </section>
+
+      <section class="kit-step" id="k5">
+        <h3><span class="num">STEP 5</span>Prove it works: two users (3 min)</h3>
+        <ul class="checklist">
+          <li><input type="checkbox" id="c1"><label for="c1">Sign up as user A in a normal window. Add a private note and a public note.</label></li>
+          <li><input type="checkbox" id="c2"><label for="c2">Open an <b>incognito / private</b> window. Sign up as user B (a different email).</label></li>
+          <li><input type="checkbox" id="c3"><label for="c3">B sees A's <b>public</b> note but <b>not</b> the private one.</label></li>
+          <li><input type="checkbox" id="c4"><label for="c4">B clicks delete on A's public note: “Note not found (or not yours)”. Refresh: it's still there.</label></li>
+          <li><input type="checkbox" id="c5"><label for="c5">Log out: you're back at the login form. <code>/api/notes</code> in a new tab says “Not logged in”.</label></li>
+        </ul>
+      </section>
+
+      <section class="kit-step" id="k6">
+        <h3><span class="num">STEP 6</span>Deploy (2 min)</h3>
+        <ul>
+          <li><b>Render</b> → Environment: add <code>SUPABASE_PUBLISHABLE_KEY</code> and <code>SUPABASE_JWKS_URL</code>.</li>
+          <li><b>Vercel</b> → Settings → Environment Variables: add <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_PUBLISHABLE_KEY</code>, then <b>redeploy</b>.</li>
+          <li>Supabase → <b>Authentication → URL Configuration</b>: set Site URL to your Vercel URL (used by confirmation and reset emails).</li>
+        </ul>
+      </section>
+
+      <section class="kit-step" id="k7">
+        <h3><span class="num">HELP</span>When it breaks</h3>
+        <div class="gotchas">
+          <div><b>Every request says “Invalid or expired token”</b><p>Check <code>SUPABASE_JWKS_URL</code> is exactly right (open it in the browser: you should see <code>{"keys":[…]}</code>). If <code>keys</code> is empty, your project still uses the legacy JWT secret: <b>Project Settings → JWT Keys</b> → migrate to the new signing keys.</p></div>
+          <div><b>List is empty, no error</b><p>That's RLS failing closed. Either no SELECT policy, or the rows have a different <code>user_id</code> (e.g. old rows made before login, which have <code>null</code>).</p></div>
+          <div><b>“new row violates row-level security policy”</b><p>Your INSERT policy rejected the row. Usually the token wasn't sent (so <code>auth.uid()</code> is null). Check <code>api.ts</code> adds the <code>Authorization</code> header.</p></div>
+          <div><b>“permission denied for table notes”</b><p>That's the grants, not RLS. Run the three <code>grant</code> lines from step 2.</p></div>
+          <div><b>“Email not confirmed” / no email arrives</b><p>Turn off “Confirm email” (step 1) for class, or confirm the user by hand in <b>Authentication → Users</b>.</p></div>
+          <div><b>CORS error after adding login</b><p>Restart the backend. <code>CORS_ORIGIN</code> must match your frontend URL exactly. The <code>Authorization</code> header is allowed by default.</p></div>
+          <div><b>Logged in, but the API says “Not logged in”</b><p>Your frontend is still using the old <code>api.ts</code>, or a fetch somewhere doesn't go through <code>request()</code>.</p></div>
+          <div><b>Want teams or admins?</b><p>Policies can look things up: <code>using (exists (select 1 from members m where m.club_id = events.club_id and m.user_id = auth.uid()))</code>. Ask a teacher to help you design it.</p></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div id="slideTemplates" hidden>
+
+<!-- ================= INTRO ================= -->
+
+<template data-part="Intro" data-title="Who are you? What can you do?" data-time="2 MIN" data-label="INTRO · LESSON 7 · ~40 MIN">
+  <div class="title-slide">
+    <div>
+      <div class="eyebrow">AUTH &amp; SUPABASE RLS · LESSON 7</div>
+      <h1>Your app has no idea <span class="accent">who's using it</span>.</h1>
+      <p class="lead">Right now anyone who finds your Render URL can read, change and delete <b>everything</b> in your database. Today we fix that, in two layers: <b>log in</b> (who are you?) and <b>Row Level Security</b> (what may you touch?).</p>
+      <div class="flow">
+        <div><b>Auth</b><small>log in, get a token</small></div><i>→</i>
+        <div><b>Verify</b><small>backend checks it</small></div><i>→</i>
+        <div><b>RLS</b><small>the DB enforces rules</small></div><i>→</i>
+        <div><b>Build</b><small>add it to your project</small></div>
+      </div>
+    </div>
+    <div class="title-art"><span class="c"># your API today. no login needed.</span>
+<span class="g">$</span> curl your-api.onrender.com/api/notes
+[
+  { "id": 1, "body": "Alice's diary..." },
+  { "id": 2, "body": "Bob's password hint" },
+  ...everyone's data
+]
+
+<span class="g">$</span> curl -X DELETE .../api/notes/1
+<span class="r">{ "ok": true }   # anyone. anything.</span></div>
+  </div>
+  <div class="talk"><b>TALK</b>What's one thing in your club project that only <i>some</i> people should be able to see or change?</div>
+  <details class="speaker-notes"><summary>Teacher notes · hook</summary>
+    <p><span class="n say">SAY</span> “Your backend from last week answers anyone who asks. There's no idea of a <i>user</i>. Today: about 35 minutes of teaching, then the rest of class is project time, and there's a Starter Code tab with every file you need.”</p>
+    <p><span class="n ask">ASK</span> The TALK question. Take 2–3 answers (“only the club officers can post events”, “only I can edit my profile”). Write one on the board; come back to it on the RLS slides.</p>
+  </details>
+</template>
+
+<!-- ================= 01 · AUTH ================= -->
+
+<template data-part="01 · Auth" data-title="Authentication vs authorization" data-time="2 MIN" data-label="AUTH 01 · TWO WORDS">
+  <h2>Two different questions: <span class="accent">who</span> and <span class="accent">may they</span>.</h2>
+  <div class="split-legend"><span class="tag authn">AUTHENTICATION · WHO ARE YOU?</span><span class="tag authz">AUTHORIZATION · WHAT MAY YOU DO?</span></div>
+  <p class="lead" style="margin-bottom:14px">Which one is each of these? Vote, then click.</p>
+  <div class="qcards">
+    <button class="qcard"><span class="who">SITUATION 1</span>“Log in with your email and password.”<span class="ans authn"><b>AUTHENTICATION</b>Proving who you are. Supabase Auth does this part.</span><span class="tap">click to reveal</span></button>
+    <button class="qcard"><span class="who">SITUATION 2</span>“Only club officers can delete events.”<span class="ans authz"><b>AUTHORIZATION</b>We know who you are; are you allowed? That's a rule, so it's RLS's job.</span><span class="tap">click to reveal</span></button>
+    <button class="qcard"><span class="who">SITUATION 3</span>“Your session expired. Please log in again.”<span class="ans authn"><b>AUTHENTICATION</b>The proof of who you are (your token) ran out.</span><span class="tap">click to reveal</span></button>
+    <button class="qcard"><span class="who">SITUATION 4</span>Bob is logged in, but he can't edit Alice's note.<span class="ans authz"><b>AUTHORIZATION</b>Bob is authenticated fine. He just isn't <i>authorized</i> for that row.</span><span class="tap">click to reveal</span></button>
+  </div>
+  <div class="rule"><b>ORDER</b>Authentication always comes first. You can't decide what someone may do until you know who they are.</div>
+  <details class="speaker-notes"><summary>Teacher notes · authn vs authz</summary>
+    <p><span class="n say">SAY</span> “Two words that sound the same. Shorthand: auth<b>N</b> = ide<b>N</b>tity, auth<b>Z</b> = permissions. HTTP has a code for each: <code>401</code> = we don't know who you are, <code>403</code> = we know, and the answer is no.”</p>
+    <p><span class="n do">DO</span> Card 4 is the one to linger on: being logged in isn't the same as being allowed.</p>
+  </details>
+</template>
+
+<template data-part="01 · Auth" data-title="How login actually works" data-time="5 MIN" data-label="AUTH 02 · STEP THROUGH">
+  <h2>Logging in = getting a <span class="accent">signed token</span>, then showing it.</h2>
+  <div data-widget="login"></div>
+  <details class="speaker-notes"><summary>Teacher notes · the login flow</summary>
+    <p><span class="n do">DO</span> Press → to step through (it steps the demo first, then moves to the next slide). Ask the room to predict before steps 5 and 8.</p>
+    <p><span class="n say">SAY</span> At step 1: “The password goes to <b>Supabase</b>, not to our Express server. We never see it and never store it. That's the whole point of using an auth provider.”</p>
+    <p><span class="n ask">ASK</span> Before step 5: “How does Express know the token is real without asking the database?” <span class="n ans">ANSWER</span> The signature. Supabase signs with a <i>private</i> key; anyone can check it with the <i>public</i> key (the JWKS). Next slide shows it.</p>
+    <p><span class="n say">SAY</span> “‘Logged in’ is not a magic state on the server. It just means the browser holds a valid token and sends it with every request.”</p>
+  </details>
+</template>
+
+<template data-part="01 · Auth" data-title="What's inside a token" data-time="3 MIN" data-label="AUTH 03 · TRY TO HACK IT">
+  <h2>A JWT is <span class="accent">readable by anyone</span>, but nobody can fake one.</h2>
+  <p class="lead" style="margin-bottom:14px">This is (roughly) the token Alice got. Three parts separated by dots. Try to cheat.</p>
+  <div data-widget="jwt"></div>
+  <details class="speaker-notes"><summary>Teacher notes · JWT</summary>
+    <p><span class="n say">SAY</span> “The middle part is just base64, not encryption. Anyone can decode it, so never put secrets in a token. What protects it is the signature: change one character of the payload and the signature stops matching.”</p>
+    <p><span class="n do">DO</span> Click “Pretend to be Bob”, then “Become admin”, then “Wait 1 hour”. Each one gets rejected for a different reason.</p>
+    <p><span class="n say">SAY</span> “Tokens expire after an hour on purpose: if one leaks, it's only useful briefly. supabase-js quietly swaps it for a fresh one using the refresh token, so users stay logged in.”</p>
+  </details>
+</template>
+
+<template data-part="01 · Auth" data-title="Keys: which goes where" data-time="2 MIN" data-label="AUTH 04 · CHEAT SHEET">
+  <h2>Five secrets-ish things. <span class="accent">Know where each one lives.</span></h2>
+  <div class="keys">
+    <div class="key"><span class="k-name">Publishable key</span><code>sb_publishable_…</code><p>Identifies your project. Limited: it can only do what your RLS policies allow.</p><span class="where ok">BROWSER OK · IF RLS IS ON</span></div>
+    <div class="key danger"><span class="k-name">Secret key</span><code>sb_secret_…</code><p>Full admin. <b>Skips RLS completely.</b> If it leaks, anyone can read and delete everything.</p><span class="where no">BACKEND .ENV ONLY</span></div>
+    <div class="key"><span class="k-name">Access token (JWT)</span><code>eyJhbGciOi…</code><p>One per logged-in user, expires in ~1 hour. Sent as <code>Authorization: Bearer …</code>.</p><span class="where mid">BROWSER → YOUR API</span></div>
+    <div class="key"><span class="k-name">JWKS URL</span><code>…/.well-known/jwks.json</code><p>Supabase's <i>public</i> keys. Your backend uses them to check token signatures.</p><span class="where ok">PUBLIC · BACKEND USES IT</span></div>
+    <div class="key"><span class="k-name">Password</span><code>••••••••</code><p>Goes from the login form straight to Supabase. Your code never stores or logs it.</p><span class="where no">NEVER IN YOUR DB</span></div>
+  </div>
+  <div class="talk"><b>TALK</b>The publishable key is in your frontend code, so anyone can find it. Why is that OK? <i>When would it not be?</i></div>
+  <details class="speaker-notes"><summary>Teacher notes · keys</summary>
+    <p><span class="n ans">ANSWER</span> It's OK because the key alone can only do what RLS allows. It's <b>not</b> OK if any table has RLS turned off: then the publishable key can read and write that whole table. That's the bridge to part 2.</p>
+    <p><span class="n say">SAY</span> “Older tutorials call these the <code>anon</code> key and the <code>service_role</code> key. Same idea, new names.”</p>
+  </details>
+</template>
+
+<template data-part="01 · Auth" data-title="Frontend: logging in" data-time="3 MIN" data-label="AUTH 05 · CODE · REACT">
+  <h2>Frontend: <span class="accent">log in</span>, then <span class="accent">attach the token</span>.</h2>
+  <div class="code-pair">
+    <div>
+      <div class="file-name"><span>frontend/src/AuthForm.tsx · the important lines</span></div>
+<pre class="snip" data-lang="ts">import { supabase } from './supabase'
+// supabase = createClient(URL, PUBLISHABLE_KEY)
+
+// Sign up (makes the account)
+await supabase.auth.signUp({ email, password })
+
+// Log in: Supabase checks the password and
+// saves a session (with the token) in localStorage
+const { error } = await supabase.auth
+  .signInWithPassword({ email, password })
+
+// Log out: deletes the saved session
+await supabase.auth.signOut()
+
+// Re-render when someone logs in or out
+supabase.auth.onAuthStateChange((_event, session) =&gt;
+  setSession(session))</pre>
+    </div>
+    <div>
+      <div class="file-name"><span>frontend/src/api.ts · every request</span></div>
+<pre class="snip" data-lang="ts">async function request&lt;T&gt;(path: string, options: RequestInit = {}) {
+  // supabase-js refreshes this before it expires
+  const { data: { session } } = await supabase.auth.getSession()
+
+  const res = await fetch(`${BASE_URL}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      // THIS is how your backend knows who's asking
+      ...(session
+        ? { Authorization: `Bearer ${session.access_token}` }
+        : {}),
+    },
+  })
+  ...
+}</pre>
+    </div>
+  </div>
+  <div class="rule"><b>NOTE</b>The browser talks to Supabase <b>only to log in</b>. All your data still goes through your Express API, same as before.</div>
+  <details class="speaker-notes"><summary>Teacher notes · frontend</summary>
+    <p><span class="n say">SAY</span> “Three function calls do all of login: signUp, signInWithPassword, signOut. supabase-js handles storing and refreshing the token.”</p>
+    <p><span class="n say">SAY</span> “The only change to the rest of your app: one header in <code>api.ts</code>. If every fetch goes through <code>request()</code>, you change one place.”</p>
+    <p><span class="n do">DO</span> Point at the Starter Code tab: full <code>AuthForm</code> and <code>AuthGate</code> components are there, ready to copy.</p>
+  </details>
+</template>
+
+<template data-part="01 · Auth" data-title="Backend: checking the token" data-time="3 MIN" data-label="AUTH 06 · CODE · EXPRESS">
+  <h2>Backend: a <span class="accent">bouncer</span> in front of your routes.</h2>
+  <div class="code-pair">
+    <div>
+      <div class="file-name"><span>backend/src/auth.js</span><span class="tag-new">NEW · npm install jose</span></div>
+<pre class="snip" data-lang="js">import { createRemoteJWKSet, jwtVerify } from 'jose'
+
+// Supabase's PUBLIC keys (fetched once, cached)
+const JWKS = createRemoteJWKSet(
+  new URL(process.env.SUPABASE_JWKS_URL))
+
+export async function requireUser(req, res, next) {
+  const header = req.headers.authorization || ''
+  const token = header.startsWith('Bearer ')
+    ? header.slice(7) : null
+  if (!token) return res.status(401)
+    .json({ error: 'Not logged in' })
+
+  try {
+    // checks the signature AND the expiry
+    const { payload } = await jwtVerify(token, JWKS,
+      { audience: 'authenticated' })
+    req.user = { id: payload.sub, email: payload.email }
+    req.token = token
+    next()                       // let them in
+  } catch {
+    res.status(401).json({ error: 'Invalid or expired token' })
+  }
+}</pre>
+    </div>
+    <div>
+      <div class="file-name"><span>backend/src/routes/notes.js</span></div>
+<pre class="snip" data-lang="js">import { requireUser } from '../auth.js'
+
+const router = Router()
+
+// Every route below needs a valid token.
+// No token? 401, and the DB is never touched.
+router.use(requireUser)
+
+router.get('/', async (req, res) =&gt; {
+  console.log('request from', req.user.email)
+  ...
+})</pre>
+      <div class="talk" style="margin-top:12px"><b>TALK</b>A route uses <code>req.body.user_id</code> to decide whose note to save. What's wrong with that?</div>
+    </div>
+  </div>
+  <details class="speaker-notes"><summary>Teacher notes · middleware</summary>
+    <p><span class="n say">SAY</span> “Middleware is a function that runs before your route. <code>next()</code> means ‘let them through’. Returning a 401 means ‘stop here’.”</p>
+    <p><span class="n ans">ANSWER</span> The body comes from the browser, so the user can type anyone's id there. The only trustworthy id is the one inside the <b>verified</b> token: <code>req.user.id</code>. Even better: let the database fill it in (next section).</p>
+    <p><span class="n say">SAY</span> “This is where most tutorials stop. But the bouncer only guards <i>this</i> door…”</p>
+  </details>
+</template>
+
+<!-- ================= 02 · RLS ================= -->
+
+<template data-part="02 · RLS" data-title="Two locks, and a side door" data-time="2 MIN" data-label="RLS 01 · WHY THE DB NEEDS RULES">
+  <h2>The bouncer isn't enough. <span class="accent">Lock the vault too.</span></h2>
+  <div class="locks">
+    <div class="lk"><h3>Browser</h3><p>Sends requests with Alice's token.</p></div>
+    <div class="lk-arrow">→</div>
+    <div class="lk"><h3>Your Express API</h3><p><code>requireUser</code> checks <b>who</b> is asking.</p><span class="lock">LOCK 1 · AUTHENTICATION</span></div>
+    <div class="lk-arrow">→</div>
+    <div class="lk db"><h3>Postgres (Supabase)</h3><p><b>RLS policies</b> decide which <b>rows</b> that user may read or change.</p><span class="lock">LOCK 2 · AUTHORIZATION</span></div>
+    <div class="side-door"><b>SIDE DOOR</b>Your publishable key is public. Anyone can open the console and call Supabase <b>directly</b>, skipping Express completely. The only thing standing there is RLS.</div>
+  </div>
+  <div class="vs">
+    <div class="lk"><h4 class="bad-head">Option A · secret key + filter by hand</h4>
+<pre class="snip solo" data-lang="js">supabase.from('notes').select('*')
+  .eq('user_id', req.user.id) // forget once = leak</pre>
+      <p>The secret key <b>skips RLS</b>. Every query in every route must remember the filter.</p></div>
+    <div class="lk"><h4 class="good-head">Option B · query as the user (use this)</h4>
+<pre class="snip solo" data-lang="js">supabaseAs(req.token).from('notes').select('*')
+// Postgres applies your policies itself</pre>
+      <p>Forward the user's token, so the <b>database</b> enforces the rules on every query, even ones you forgot.</p></div>
+  </div>
+  <details class="speaker-notes"><summary>Teacher notes · two locks</summary>
+    <p><span class="n say">SAY</span> “Think of a bank. The bouncer at the door checks your ID. The vault checks whether this box is <i>yours</i>. If the vault has no lock, anyone who gets past the bouncer, or comes in a side window, takes everything.”</p>
+    <p><span class="n say">SAY</span> “Your boilerplate already turned RLS on with no policies. That's why the publishable key can't touch the <code>example</code> table. The backend used the secret key, which skips RLS. Today we switch user data to Option B.”</p>
+  </details>
+</template>
+
+<template data-part="02 · RLS" data-title="RLS playground" data-time="4 MIN" data-label="RLS 02 · LIVE · TRY IT">
+  <h2>RLS = a <span class="accent">WHERE clause</span> Postgres adds to every query.</h2>
+  <div data-widget="lab" data-preset="off"></div>
+  <details class="speaker-notes"><summary>Teacher notes · playground</summary>
+    <p><span class="n do">DO</span> Follow this script (about 4 minutes):</p>
+    <p>1. RLS is <b>off</b>. View as <b>Not logged in</b>: everything is visible. Click delete on a row. “That's your app right now.” Hit ↺ to bring it back.</p>
+    <p>2. Turn RLS <b>on</b>, no policies. View as Alice: <b>nothing</b>, and no error. “RLS fails closed: no rule means no access.”</p>
+    <p>3. SELECT → “owner only”. Alice sees her 2 notes, Bob sees his. Then “owner or public”.</p>
+    <p>4. As Bob, click delete on Alice's public note: <b>0 rows, no error</b>. Point at the terminal line.</p>
+    <p>5. Click <b>Secret key</b>: sees everything no matter what. “That's why it never goes in the browser.”</p>
+    <p><span class="n say">SAY</span> “The full version with challenges is in the Policy Lab tab.”</p>
+  </details>
+</template>
+
+<template data-part="02 · RLS" data-title="Writing a policy" data-time="3 MIN" data-label="RLS 03 · ANATOMY">
+  <h2>One policy, <span class="accent">line by line</span>.</h2>
+  <p class="hint">Click each line.</p>
+  <div class="anno">
+    <button data-k="name"><span class="kw">create policy</span> <span class="str">"edit own notes"</span><span class="tag-n">← a label</span></button>
+    <button data-k="on">  <span class="kw">on</span> notes</button>
+    <button data-k="for">  <span class="kw">for</span> update<span class="tag-n">← which command</span></button>
+    <button data-k="to">  <span class="kw">to</span> authenticated<span class="tag-n">← who it applies to</span></button>
+    <button data-k="using">  <span class="kw">using</span> (auth.uid() = user_id)<span class="tag-n">← which existing rows</span></button>
+    <button data-k="check">  <span class="kw">with check</span> (auth.uid() = user_id);<span class="tag-n">← what new rows must look like</span></button>
+  </div>
+  <div class="anno-detail"><span class="hint">Click a line above.</span></div>
+  <div class="cards" style="margin-top:14px">
+    <div><b>USING</b><p>Filters rows that already exist. Used by <code>select</code>, <code>update</code>, <code>delete</code>. Rows that fail are invisible.</p></div>
+    <div><b>WITH CHECK</b><p>Checks a row you're about to write. Used by <code>insert</code> and <code>update</code>. Fail = an error.</p></div>
+    <div><b>auth.uid()</b><p>The <code>sub</code> from the token: the logged-in user's id. <code>null</code> if not logged in.</p></div>
+  </div>
+  <details class="speaker-notes"><summary>Teacher notes · anatomy</summary>
+    <p><span class="n do">DO</span> Click through all six lines. Spend the most time on <b>using</b> vs <b>with check</b>.</p>
+    <p><span class="n ask">ASK</span> “Why does UPDATE need both?” <span class="n ans">ANSWER</span> USING: you may only pick your own rows to edit. WITH CHECK: after editing, the row must still be yours, so you can't change <code>user_id</code> to give it away (or plant it on someone).</p>
+    <p><span class="n say">SAY</span> “The complete SQL for a table with all four policies is step 2 in Starter Code. Copy it and rename the table.”</p>
+  </details>
+</template>
+
+<template data-part="02 · RLS" data-title="Spot the hole" data-time="3 MIN" data-label="RLS 04 · FIND THE BUG">
+  <h2>Each of these has a <span class="accent">security hole</span>. Find it.</h2>
+  <p class="lead" style="margin-bottom:14px">Talk to a neighbour for 20 seconds per card, then click.</p>
+  <div class="qcards">
+    <button class="qcard"><span class="who">POLICY</span><pre>create policy "delete" on notes
+  for delete
+  using (true);</pre><span class="ans hole"><b>HOLE · ANYONE DELETES ANYTHING</b><code>true</code> matches every row, and there's no <code>to authenticated</code>, so even logged-out visitors can wipe the table. Fix: <code>to authenticated using (auth.uid() = user_id)</code>.</span><span class="tap">click to reveal</span></button>
+    <button class="qcard"><span class="who">POLICY</span><pre>create policy "insert" on notes
+  for insert to authenticated
+  with check (true);</pre><span class="ans hole"><b>HOLE · FORGED OWNERS</b>Any logged-in user can insert a row with <code>user_id</code> = Alice's id. Now Alice “wrote” something she didn't. Fix: <code>with check (auth.uid() = user_id)</code>.</span><span class="tap">click to reveal</span></button>
+    <button class="qcard"><span class="who">EXPRESS ROUTE</span><pre>// using the SECRET key client
+supabase.from('notes').insert({
+  body: req.body.body,
+  user_id: req.body.user_id,
+})</pre><span class="ans hole"><b>HOLE · TRUSTING THE BROWSER</b>The secret key skips RLS, and the user picks <code>user_id</code>. Fix: use <code>supabaseAs(req.token)</code> and drop <code>user_id</code> (the column defaults to <code>auth.uid()</code>).</span><span class="tap">click to reveal</span></button>
+    <button class="qcard"><span class="who">FRONTEND .ENV</span><pre>VITE_SUPABASE_URL=https://xyz.supabase.co
+VITE_SUPABASE_KEY=sb_secret_9f2c...</pre><span class="ans hole"><b>HOLE · ADMIN KEY IN THE BROWSER</b>Every <code>VITE_</code> variable is shipped to every visitor. That's full admin access for anyone. Fix: <b>rotate the key</b> in the dashboard now, and use the publishable key.</span><span class="tap">click to reveal</span></button>
+  </div>
+  <div class="rule"><b>RULE</b>RLS fails <b>closed</b> and <b>quietly</b>. A missing policy gives an empty list, not an error. “My list is empty” after enabling RLS usually means “I forgot a SELECT policy”.</div>
+  <details class="speaker-notes"><summary>Teacher notes · spot the hole</summary>
+    <p><span class="n do">DO</span> One card at a time. Let a pair explain the hole before revealing.</p>
+    <p><span class="n say">SAY</span> On card 4: “If you ever push the secret key to GitHub, assume it's stolen. Bots scan GitHub for keys within minutes. Deleting the commit isn't enough; rotate it.”</p>
+  </details>
+</template>
+
+<template data-part="02 · RLS" data-title="Wiring it into Express" data-time="2 MIN" data-label="RLS 05 · CODE · PUTTING IT TOGETHER">
+  <h2>Forward the token, <span class="accent">let Postgres do the rest</span>.</h2>
+  <div class="code-pair">
+    <div>
+      <div class="file-name"><span>backend/src/supabase.js · add this</span></div>
+<pre class="snip" data-lang="js">// A client that acts AS the logged-in user.
+// Postgres sees their token, so auth.uid()
+// is their id and your policies apply.
+export function supabaseAs(token) {
+  return createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    global: {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+    auth: { persistSession: false, autoRefreshToken: false },
+  })
+}</pre>
+      <div class="file-name" style="margin-top:12px"><span>schema · the column that makes it easy</span></div>
+<pre class="snip" data-lang="sql">user_id uuid not null default auth.uid()
+  references auth.users (id) on delete cascade</pre>
+    </div>
+    <div>
+      <div class="file-name"><span>backend/src/routes/notes.js</span></div>
+<pre class="snip" data-lang="js">router.use(requireUser)
+
+router.get('/', async (req, res) =&gt; {
+  // no .eq('user_id', ...) needed: RLS filters
+  const { data, error } = await supabaseAs(req.token)
+    .from('notes').select('*')
+  ...
+})
+
+router.post('/', async (req, res) =&gt; {
+  // no user_id: the DB fills in auth.uid()
+  const { data, error } = await supabaseAs(req.token)
+    .from('notes').insert({ body: req.body.body })
+    .select().single()
+  ...
+})
+
+router.delete('/:id', async (req, res) =&gt; {
+  const { data } = await supabaseAs(req.token)
+    .from('notes').delete().eq('id', req.params.id)
+    .select()
+  // someone else's note? 0 rows, NOT an error
+  if (data.length === 0) return res.status(404)...
+})</pre>
+    </div>
+  </div>
+  <details class="speaker-notes"><summary>Teacher notes · wiring</summary>
+    <p><span class="n say">SAY</span> “Two locks: <code>requireUser</code> rejects strangers, and <code>supabaseAs</code> makes the database apply the rules. Keep the plain <code>supabase</code> (secret key) client only for admin jobs.”</p>
+    <p><span class="n say">SAY</span> “Notice the delete: RLS never says ‘forbidden’, the row just isn't there. So check how many rows came back.”</p>
+  </details>
+</template>
+
+<!-- ================= 03 · PLAY & BUILD ================= -->
+
+<template data-part="03 · Play &amp; Build" data-title="Game: Access Denied" data-time="5 MIN" data-label="PLAY · TEAM GAME" data-game>
+  <div class="title-slide" style="min-height:380px">
+    <div>
+      <div class="eyebrow">CLASS GAME · TWO TEAMS</div>
+      <h1>Access <span class="accent">Denied</span>.</h1>
+      <p class="lead">Split the room in two. Each round is a real auth or RLS situation. Pick what happens, or what to do.</p>
+      <div class="cards">
+        <div><b>Your turn</b><p>Right answer: <b>100</b> points + up to 50 for speed.</p></div>
+        <div><b>Steal</b><p>Wrong or too slow? The other team gets one shot for <b>50</b>.</p></div>
+        <div><b>Talk fast</b><p>Teams can discuss, but the clock is running.</p></div>
+      </div>
+      <button class="next-button" data-open="game" style="height:46px;font-size:15px;margin-top:6px">Open the game →</button>
+    </div>
+    <div class="title-art"><span class="c"># sample round</span>
+
+RLS is on. There are no policies.
+Alice runs:
+
+  <span class="b">select * from notes;</span>
+
+<span class="c"># what does she get?</span>
+ 1  every row
+ 2  an error: permission denied
+ 3  [] an empty list
+ 4  only her rows</div>
+  </div>
+  <details class="speaker-notes"><summary>Teacher notes · game</summary>
+    <p><span class="n do">DO</span> Click “Open the game”, pick <b>6 questions (~3 min)</b> or <b>10 (~5 min)</b>. Keys 1–4 answer, Enter goes to the next question. One “driver” per team.</p>
+    <p><span class="n say">SAY</span> Read the one-line explanation after each reveal.</p>
+  </details>
+</template>
+
+<template data-part="03 · Play &amp; Build" data-title="Project time" data-time="2 MIN" data-label="BUILD · REST OF CLASS">
+  <h2>Project time: <span class="accent">add login to your app</span>.</h2>
+  <div class="cards">
+    <div><b>1 · Dashboard</b><p>Turn off “Confirm email” for class. Copy the publishable key and JWKS URL.</p></div>
+    <div><b>2 · SQL</b><p>Give your main table a <code>user_id ... default auth.uid()</code>, enable RLS, add the 4 policies.</p></div>
+    <div><b>3 · Backend</b><p><code>npm install jose</code>, add <code>requireUser</code> and <code>supabaseAs</code>.</p></div>
+    <div><b>4 · Frontend</b><p><code>npm install @supabase/supabase-js</code>, add the login form, send the token.</p></div>
+    <div><b>5 · Prove it</b><p>Two users, two windows. User B must not see or delete A's private stuff.</p></div>
+  </div>
+  <div class="rule"><b>EVERYTHING YOU NEED</b>Every file, copy-paste ready, plus a “when it breaks” list: <a href="#" data-open="kit">open the Starter Code tab</a>. Stuck for more than 5 minutes? Raise your hand.</div>
+  <div class="talk"><b>EXIT CHECK</b>Before you leave, tell a teacher: (1) what the secret key skips, (2) what an empty list after enabling RLS usually means, (3) where your app gets <code>user_id</code> from.</div>
+  <details class="speaker-notes"><summary>Teacher notes · project time</summary>
+    <p><span class="n ans">ANSWERS</span> 1: RLS (it's admin). 2: missing SELECT policy (RLS fails closed). 3: from the verified token / <code>auth.uid()</code>, never from the request body.</p>
+    <p><span class="n do">DO</span> Walk the room. The usual blockers: wrong JWKS URL, forgot to restart Vite after editing .env, “Confirm email” still on, old rows with <code>user_id = null</code>. All in the Starter Code “When it breaks” list.</p>
+    <p><span class="n say">SAY</span> “Not every project needs per-user data today. If yours doesn't, still add login and make one table owner-only. That's the pattern you'll reuse.”</p>
+  </details>
+</template>
+
+</div>
+
+<script src="deck.js"></script>
+<script src="game.js"></script>
+<script src="../lesson-switcher.js"></script>
+</body>
+</html>
